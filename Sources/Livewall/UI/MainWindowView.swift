@@ -8,6 +8,9 @@ struct MainWindowView: View {
             Tab("Biblioteca", systemImage: "square.grid.2x2") {
                 LibraryView()
             }
+            Tab("Workshop", systemImage: "cloud") {
+                WorkshopView()
+            }
             Tab("Bloqueo", systemImage: "lock.display") {
                 LockScreenView()
             }
@@ -15,6 +18,6 @@ struct MainWindowView: View {
                 SettingsView()
             }
         }
-        .frame(minWidth: 520, minHeight: 420)
+        .frame(minWidth: 760, minHeight: 520)
     }
 }

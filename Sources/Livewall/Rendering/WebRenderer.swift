@@ -11,10 +11,16 @@ final class WebRenderer: WallpaperRenderer {
     init(url: URL, options: RenderOptions) {
         let configuration = WKWebViewConfiguration()
         configuration.mediaTypesRequiringUserActionForPlayback = []
+        let scripts = configuration.userContentController
         if options.muted {
-            configuration.userContentController.addUserScript(
-                WKUserScript(source: Self.muteScript, injectionTime: .atDocumentStart, forMainFrameOnly: false)
-            )
+            scripts.addUserScript(WKUserScript(source: Self.muteScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        }
+        scripts.addUserScript(WKUserScript(source: WallpaperEngineShim.stubs, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        if url.isFileURL, let project = try? WallpaperEngineProject.load(from: url.deletingLastPathComponent()) {
+            scripts.addUserScript(WKUserScript(
+                source: WallpaperEngineShim.applyProperties(project.defaultPropertiesJSON()),
+                injectionTime: .atDocumentEnd, forMainFrameOnly: true
+            ))
         }
         webView = WKWebView(frame: .zero, configuration: configuration)
         webView.underPageBackgroundColor = .black

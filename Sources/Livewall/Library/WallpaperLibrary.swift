@@ -36,30 +36,37 @@ final class WallpaperLibrary: ObservableObject {
 
     /// Imports a video, HTML page, Metal shader, or a folder containing `index.html`.
     @discardableResult
-    func importItem(at url: URL) throws -> Wallpaper {
+    func importItem(at url: URL, name: String? = nil) throws -> Wallpaper {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
 
-        let id = UUID()
-        let name = url.deletingPathExtension().lastPathComponent
+        let name = name ?? url.deletingPathExtension().lastPathComponent
         let isDirectory = (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
-
-        let wallpaper: Wallpaper
         if isDirectory {
-            guard fileManager.fileExists(atPath: url.appending(path: "index.html").path) else {
-                throw LibraryError.missingIndex
-            }
-            try fileManager.copyItem(at: url, to: itemsURL.appending(path: id.uuidString, directoryHint: .isDirectory))
-            wallpaper = Wallpaper(id: id, name: name, kind: .web, source: .libraryFile("\(id.uuidString)/index.html"))
-        } else {
-            guard let kind = WallpaperKind(fileExtension: url.pathExtension) else {
-                throw LibraryError.unsupportedFile(url.pathExtension)
-            }
-            let fileName = "\(id.uuidString).\(url.pathExtension.lowercased())"
-            try fileManager.copyItem(at: url, to: itemsURL.appending(path: fileName))
-            wallpaper = Wallpaper(id: id, name: name, kind: kind, source: .libraryFile(fileName))
+            return try importWebFolder(at: url, entryFile: "index.html", name: name)
         }
 
+        guard let kind = WallpaperKind(fileExtension: url.pathExtension) else {
+            throw LibraryError.unsupportedFile(url.pathExtension)
+        }
+        let id = UUID()
+        let fileName = "\(id.uuidString).\(url.pathExtension.lowercased())"
+        try fileManager.copyItem(at: url, to: itemsURL.appending(path: fileName))
+        return add(Wallpaper(id: id, name: name, kind: kind, source: .libraryFile(fileName)))
+    }
+
+    /// Copies a whole site folder; `entryFile` is the page to load, relative to the folder.
+    @discardableResult
+    func importWebFolder(at folder: URL, entryFile: String, name: String) throws -> Wallpaper {
+        guard fileManager.fileExists(atPath: folder.appending(path: entryFile).path) else {
+            throw LibraryError.missingIndex
+        }
+        let id = UUID()
+        try fileManager.copyItem(at: folder, to: itemsURL.appending(path: id.uuidString, directoryHint: .isDirectory))
+        return add(Wallpaper(id: id, name: name, kind: .web, source: .libraryFile("\(id.uuidString)/\(entryFile)")))
+    }
+
+    private func add(_ wallpaper: Wallpaper) -> Wallpaper {
         userWallpapers.append(wallpaper)
         save()
         return wallpaper
@@ -72,10 +79,7 @@ final class WallpaperLibrary: ObservableObject {
         else { throw LibraryError.invalidURL }
 
         let title = name.trimmingCharacters(in: .whitespaces)
-        let wallpaper = Wallpaper(id: UUID(), name: title.isEmpty ? url.host ?? address : title, kind: .web, source: .remote(url))
-        userWallpapers.append(wallpaper)
-        save()
-        return wallpaper
+        return add(Wallpaper(id: UUID(), name: title.isEmpty ? url.host ?? address : title, kind: .web, source: .remote(url)))
     }
 
     func rename(_ wallpaper: Wallpaper, to name: String) {

@@ -18,6 +18,8 @@ struct SettingsView: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
 
+            SteamSettingsSection()
+
             Section("Audio") {
                 Toggle("Silenciar videos y páginas", isOn: $settings.muted)
             }

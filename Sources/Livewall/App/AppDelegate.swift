@@ -7,6 +7,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let library = WallpaperLibrary()
     lazy var desktop = DesktopController(library: library, settings: settings)
     lazy var lockScreen = LockScreenModel(resolver: WallpaperAssetResolver(library: library))
+    let steamAccount = SteamAccount()
+    lazy var workshop = WorkshopModel(account: steamAccount, library: library, settings: settings)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         desktop.start()
