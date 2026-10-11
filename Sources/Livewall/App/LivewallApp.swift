@@ -16,6 +16,7 @@ struct LivewallApp: App {
                 .environmentObject(appDelegate.settings)
                 .environmentObject(appDelegate.library)
                 .environmentObject(appDelegate.desktop)
+                .environmentObject(appDelegate.lockScreen)
         }
         .defaultSize(width: 640, height: 520)
     }

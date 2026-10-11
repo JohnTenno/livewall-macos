@@ -6,6 +6,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let settings = AppSettings()
     let library = WallpaperLibrary()
     lazy var desktop = DesktopController(library: library, settings: settings)
+    lazy var lockScreen = LockScreenModel(resolver: WallpaperAssetResolver(library: library))
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         desktop.start()

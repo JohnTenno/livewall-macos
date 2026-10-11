@@ -8,6 +8,9 @@ struct MainWindowView: View {
             Tab("Biblioteca", systemImage: "square.grid.2x2") {
                 LibraryView()
             }
+            Tab("Bloqueo", systemImage: "lock.display") {
+                LockScreenView()
+            }
             Tab("Ajustes", systemImage: "gearshape") {
                 SettingsView()
             }

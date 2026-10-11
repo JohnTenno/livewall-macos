@@ -16,7 +16,7 @@ final class DesktopController: ObservableObject {
     init(library: WallpaperLibrary, settings: AppSettings) {
         self.library = library
         self.settings = settings
-        factory = RendererFactory(library: library)
+        factory = RendererFactory(resolver: WallpaperAssetResolver(library: library))
     }
 
     func start() {
