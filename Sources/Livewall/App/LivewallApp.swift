@@ -1,0 +1,22 @@
+import SwiftUI
+
+@main
+struct LivewallApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    var body: some Scene {
+        MenuBarExtra("Livewall", systemImage: "sparkles.tv") {
+            MenuBarContent()
+                .environmentObject(appDelegate.settings)
+                .environmentObject(appDelegate.library)
+        }
+
+        Window("Livewall", id: MainWindowView.windowID) {
+            MainWindowView()
+                .environmentObject(appDelegate.settings)
+                .environmentObject(appDelegate.library)
+                .environmentObject(appDelegate.desktop)
+        }
+        .defaultSize(width: 640, height: 520)
+    }
+}
