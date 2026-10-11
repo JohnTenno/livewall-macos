@@ -40,6 +40,11 @@ final class AerialStore {
         fileManager.fileExists(atPath: backupURL(for: aerial).path)
     }
 
+    /// Apple's movie for this Aerial: the backup once Livewall has replaced it, otherwise the cached file.
+    func originalVideoURL(for aerial: Aerial) -> URL {
+        hasBackup(for: aerial) ? backupURL(for: aerial) : aerial.videoURL
+    }
+
     func install(_ movie: URL, for aerial: Aerial) throws {
         guard aerial.isDownloaded else { throw LockScreenError.aerialNotDownloaded(aerial.name) }
         try fileManager.createDirectory(at: backupRoot, withIntermediateDirectories: true)

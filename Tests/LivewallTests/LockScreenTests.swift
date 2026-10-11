@@ -24,6 +24,23 @@ import Testing
     }
 }
 
+@Suite struct MovieLooperTests {
+    @Test func repeatsMovieToCoverMinimumDuration() async throws {
+        let spec = VideoExportSpec(width: 160, height: 90, frameRate: 15, duration: 2, crossfade: 0, bitRate: 200_000)
+        let tmp = FileManager.default.temporaryDirectory
+        let clip = tmp.appending(path: "clip-\(UUID().uuidString).mov")
+        let looped = tmp.appending(path: "looped-\(UUID().uuidString).mov")
+        defer { [clip, looped].forEach { try? FileManager.default.removeItem(at: $0) } }
+
+        try await ShaderVideoRecorder(source: try #require(BuiltInShaders.source(forKey: "aurora")), spec: spec)
+            .record(to: clip) { _ in }
+        try await MovieLooper().extend(clip, toAtLeast: CMTime(seconds: 5, preferredTimescale: 600), output: looped)
+
+        let duration = await MovieLooper.duration(of: looped).seconds
+        #expect(abs(duration - 6) < 0.2)
+    }
+}
+
 @Suite struct AerialStoreTests {
     private let assetID = "F439B0A7-D18C-4B14-9681-6520E6A74FE9"
 

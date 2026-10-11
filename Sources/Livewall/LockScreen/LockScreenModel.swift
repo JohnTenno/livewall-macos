@@ -59,12 +59,17 @@ final class LockScreenModel: ObservableObject {
         error = nil
 
         let store = store
+        let looped = FileManager.default.temporaryDirectory.appending(path: "livewall-lockscreen-looped.mov")
         Task {
             do {
                 try await Task.detached(priority: .userInitiated) {
                     try await job()
-                    try store.install(movie, for: aerial)
+                    // Must cover every point of interest of Apple's original, or the lock screen freezes on resume.
+                    let original = await MovieLooper.duration(of: store.originalVideoURL(for: aerial))
+                    try await MovieLooper().extend(movie, toAtLeast: original, output: looped)
+                    try store.install(looped, for: aerial)
                     try? FileManager.default.removeItem(at: movie)
+                    try? FileManager.default.removeItem(at: looped)
                 }.value
                 status = "Listo. Bloquea la pantalla (⌃⌘Q) para verlo."
             } catch {
