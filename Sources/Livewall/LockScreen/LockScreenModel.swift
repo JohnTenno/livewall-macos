@@ -32,20 +32,26 @@ final class LockScreenModel: ObservableObject {
         guard let aerial else { return fail(LockScreenError.noAerialSelected) }
         guard aerial.isDownloaded else { return fail(LockScreenError.aerialNotDownloaded(aerial.name)) }
 
-        let movie = FileManager.default.temporaryDirectory.appending(path: "livewall-lockscreen.mov")
-        let job: () async throws -> Void
+        let temp = FileManager.default.temporaryDirectory
+        let recording = temp.appending(path: "livewall-lockscreen-recording.mov")
+        let encoded = temp.appending(path: "livewall-lockscreen-aerial.mov")
+        let report: (Double) -> Void = { [weak self] value in
+            Task { @MainActor in self?.progress = value }
+        }
+
+        // Produces a source movie and the share of the progress bar it used (shaders are recorded first).
+        let makeSource: () async throws -> (URL, Double)
         do {
             switch wallpaper.kind {
             case .shader:
                 let recorder = try ShaderVideoRecorder(source: try resolver.shaderSource(for: wallpaper), spec: spec)
-                job = { [weak self] in
-                    try await recorder.record(to: movie) { value in
-                        Task { @MainActor in self?.progress = value }
-                    }
+                makeSource = {
+                    try await recorder.record(to: recording) { report($0 * 0.4) }
+                    return (recording, 0.4)
                 }
             case .video:
                 let source = try resolver.url(for: wallpaper)
-                job = { try await VideoTranscoder().transcode(source, to: movie) }
+                makeSource = { (source, 0) }
             case .web:
                 throw LockScreenError.unsupportedKind(.web)
             }
@@ -54,22 +60,23 @@ final class LockScreenModel: ObservableObject {
         }
 
         isWorking = true
-        progress = wallpaper.kind == .shader ? 0 : nil
-        status = "Generando video 4K de «\(wallpaper.name)»…"
+        progress = 0
+        status = "Generando video 4K a 240 fps de «\(wallpaper.name)»…"
         error = nil
 
         let store = store
-        let looped = FileManager.default.temporaryDirectory.appending(path: "livewall-lockscreen-looped.mov")
         Task {
             do {
                 try await Task.detached(priority: .userInitiated) {
-                    try await job()
+                    let (source, offset) = try await makeSource()
                     // Must cover every point of interest of Apple's original, or the lock screen freezes on resume.
-                    let original = await MovieLooper.duration(of: store.originalVideoURL(for: aerial))
-                    try await MovieLooper().extend(movie, toAtLeast: original, output: looped)
-                    try store.install(looped, for: aerial)
-                    try? FileManager.default.removeItem(at: movie)
-                    try? FileManager.default.removeItem(at: looped)
+                    let original = await AerialMovieEncoder.duration(of: store.originalVideoURL(for: aerial))
+                    try await AerialMovieEncoder().encode(source, minimumDuration: original, to: encoded) { value in
+                        report(offset + value * (1 - offset))
+                    }
+                    try store.install(encoded, for: aerial)
+                    try? FileManager.default.removeItem(at: recording)
+                    try? FileManager.default.removeItem(at: encoded)
                 }.value
                 status = "Listo. Bloquea la pantalla (⌃⌘Q) para verlo."
             } catch {
@@ -79,6 +86,7 @@ final class LockScreenModel: ObservableObject {
             progress = nil
             refresh()
         }
+
     }
 
     func restore() {

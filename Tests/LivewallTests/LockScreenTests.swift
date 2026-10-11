@@ -24,22 +24,50 @@ import Testing
     }
 }
 
-@Suite struct MovieLooperTests {
-    @Test func repeatsMovieToCoverMinimumDuration() async throws {
-        let spec = VideoExportSpec(width: 160, height: 90, frameRate: 15, duration: 2, crossfade: 0, bitRate: 200_000)
+@Suite struct AerialMovieEncoderTests {
+    @Test func encodesAppleStyleAerial() async throws {
+        let spec = VideoExportSpec(width: 320, height: 180, frameRate: 15, duration: 2, crossfade: 0, bitRate: 300_000)
         let tmp = FileManager.default.temporaryDirectory
         let clip = tmp.appending(path: "clip-\(UUID().uuidString).mov")
-        let looped = tmp.appending(path: "looped-\(UUID().uuidString).mov")
-        defer { [clip, looped].forEach { try? FileManager.default.removeItem(at: $0) } }
+        let aerial = tmp.appending(path: "aerial-\(UUID().uuidString).mov")
+        defer { [clip, aerial].forEach { try? FileManager.default.removeItem(at: $0) } }
 
         try await ShaderVideoRecorder(source: try #require(BuiltInShaders.source(forKey: "aurora")), spec: spec)
             .record(to: clip) { _ in }
-        try await MovieLooper().extend(clip, toAtLeast: CMTime(seconds: 5, preferredTimescale: 600), output: looped)
+        let format = AerialMovieEncoder.Format(width: 640, height: 360, bitRate: 1_000_000)
+        var lastProgress = 0.0
+        try await AerialMovieEncoder(format: format)
+            .encode(clip, minimumDuration: CMTime(seconds: 3, preferredTimescale: 600), to: aerial) { lastProgress = $0 }
+        #expect(lastProgress == 1)
 
-        let duration = await MovieLooper.duration(of: looped).seconds
-        #expect(abs(duration - 6) < 0.2)
+        // Two whole loops of the 2 s clip cover the 3 s minimum.
+        #expect(abs(await AerialMovieEncoder.duration(of: aerial).seconds - 4) < 0.05)
+
+        let asset = AVURLAsset(url: aerial)
+        let track = try #require(try await asset.loadTracks(withMediaType: .video).first)
+        #expect(try await track.load(.segments).count == 1)
+        #expect(try await track.load(.naturalSize) == CGSize(width: 640, height: 360))
+        #expect(abs(try await track.load(.minFrameDuration).seconds - 1001.0 / 240_000) < 1e-6)
+        let format10 = try #require(try await track.load(.formatDescriptions).first)
+        let extensions = CMFormatDescriptionGetExtensions(format10) as? [String: Any]
+        #expect(extensions?["BitsPerComponent"] as? Int == 10)
+
+        // The Aerial player needs HEVC temporal level info on every sample to ramp playback down.
+        let reader = try AVAssetReader(asset: asset)
+        let output = AVAssetReaderTrackOutput(track: track, outputSettings: nil)
+        reader.add(output)
+        reader.startReading()
+        var checked = 0
+        while let sample = output.copyNextSampleBuffer(), checked < 50 {
+            guard CMSampleBufferGetNumSamples(sample) > 0 else { continue }
+            let attachments = (CMSampleBufferGetSampleAttachmentsArray(sample, createIfNecessary: false) as? [[CFString: Any]])?.first
+            #expect(attachments?[kCMSampleAttachmentKey_HEVCTemporalLevelInfo] != nil)
+            checked += 1
+        }
+        #expect(checked == 50)
     }
 }
+
 
 @Suite struct AerialStoreTests {
     private let assetID = "F439B0A7-D18C-4B14-9681-6520E6A74FE9"
