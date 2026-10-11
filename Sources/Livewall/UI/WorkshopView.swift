@@ -21,6 +21,16 @@ struct WorkshopView: View {
                     .background(.red.opacity(0.1))
             }
 
+            if workshop.needsLogin {
+                HStack {
+                    Text("Después de iniciar sesión, vuelve a pulsar «Descargar y aplicar».")
+                        .font(.callout)
+                    Spacer()
+                    Button("Iniciar sesión en SteamCMD…") { account.openLoginTerminal() }
+                }
+                .padding(10)
+            }
+
             if account.trimmedAPIKey.isEmpty {
                 ContentUnavailableView("Falta la API key", systemImage: "key",
                                        description: Text("Agrégala en la pestaña Ajustes → Steam."))

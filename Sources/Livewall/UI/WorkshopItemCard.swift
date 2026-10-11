@@ -8,14 +8,22 @@ struct WorkshopItemCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            AsyncImage(url: item.previewURL) { image in
-                image.resizable().aspectRatio(contentMode: .fill)
-            } placeholder: {
-                Rectangle().fill(.quaternary)
-            }
-            .frame(height: 110)
-            .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            // A fill-scaled image overflows its frame, and clipping does not clip hit testing:
+            // without allowsHitTesting(false) it swallows clicks on the buttons of the card above.
+            Rectangle()
+                .fill(.quaternary)
+                .frame(height: 110)
+                .frame(maxWidth: .infinity)
+                .overlay {
+                    AsyncImage(url: item.previewURL) { image in
+                        image.resizable().aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        Color.clear
+                    }
+                    .allowsHitTesting(false)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .contentShape(RoundedRectangle(cornerRadius: 8))
 
             Text(item.title)
                 .font(.headline)

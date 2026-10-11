@@ -10,6 +10,8 @@ final class WorkshopModel: ObservableObject {
     @Published private(set) var error: String?
     @Published private(set) var downloading: Set<String> = []
     @Published private(set) var imported: Set<String> = []
+    /// True after a download failed because SteamCMD has no cached Steam session.
+    @Published private(set) var needsLogin = false
 
     private let client = SteamWorkshopClient()
     private let account: SteamAccount
@@ -70,8 +72,12 @@ final class WorkshopModel: ObservableObject {
                     itemID: item.id, appID: WorkshopQuery.wallpaperEngineAppID, username: username
                 )
                 let wallpaper = try importer.importItem(at: folder, fallbackTitle: item.title)
+                needsLogin = false
                 imported.insert(item.id)
                 settings.selectedWallpaperID = wallpaper.id
+            } catch WorkshopError.notLoggedIn {
+                needsLogin = true
+                self.error = WorkshopError.notLoggedIn.localizedDescription
             } catch {
                 self.error = "\(item.title): \(error.localizedDescription)"
             }
