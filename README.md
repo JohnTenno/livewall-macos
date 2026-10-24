@@ -42,6 +42,15 @@ Since macOS 26, Aerials are cached per user in `~/Library/Application Support/co
 Livewall replaces that file (copying the original extended attributes so it is not re-downloaded), backs the original up to
 `~/Library/Application Support/Livewall/AerialBackups/`, and restarts `WallpaperAgent`. Unofficial: a macOS update may restore the original.
 
+The replacement is re-encoded automatically, because the lock screen player is picky:
+
+- **Scaled and cropped** to 3840×2160 so it fills the screen.
+- **Looped** until it is at least as long as Apple's original; the player resumes at fixed points of interest and freezes if the movie ends earlier.
+- **HEVC Main10 at 240 fps with temporal sub-layers**, like Apple's Aerials; without them the player fails when it ramps down and the screen turns black.
+
+The slow-motion when locking and unlocking is macOS's own Aerial transition; 240 fps keeps it smooth.
+Tested for days of lock/unlock cycles on a MacBook Pro M1 with macOS 27.
+
 ## Steam Workshop
 
 1. Create a Web API key at https://steamcommunity.com/dev/apikey and paste it in Settings → Steam (stored in the Keychain).
