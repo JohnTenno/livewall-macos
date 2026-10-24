@@ -65,6 +65,13 @@ The replacement is re-encoded automatically, because the lock screen player is p
 The slow-motion when locking and unlocking is macOS's own Aerial transition; 240 fps keeps it smooth.
 Tested for days of lock/unlock cycles on a MacBook Pro M1 with macOS 27.
 
+Completed lock-screen conversions are kept in `~/Library/Application Support/Livewall/LockScreenExports/`.
+Reapplying a wallpaper reuses its saved conversion, including after relaunching Livewall or restoring Apple's original.
+The source content, shader recording settings, encoder recipe and required Aerial duration identify each conversion.
+A changed source/recipe or missing cached file triggers a new conversion. Deleting a wallpaper from the library also
+removes its saved conversions. Failed exports are not cached. Videos converted by older versions need one initial
+conversion because those versions did not retain the processed file.
+
 ## Steam Workshop
 
 1. Create a Web API key at https://steamcommunity.com/dev/apikey and paste it in Settings → Steam (stored in the Keychain).

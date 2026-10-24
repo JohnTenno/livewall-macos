@@ -9,6 +9,10 @@ final class WallpaperAssetResolver {
         self.library = library
     }
 
+    var libraryRoot: URL { library.rootURL }
+
+    func contains(_ wallpaper: Wallpaper) -> Bool { library.wallpaper(id: wallpaper.id) != nil }
+
     func url(for wallpaper: Wallpaper) throws -> URL {
         switch wallpaper.source {
         case .libraryFile(let path): library.fileURL(forRelativePath: path)

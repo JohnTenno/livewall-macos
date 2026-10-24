@@ -93,6 +93,7 @@ final class WallpaperLibrary: ObservableObject {
         if case .libraryFile(let path) = wallpaper.source, let topLevel = path.split(separator: "/").first {
             try? fileManager.removeItem(at: itemsURL.appending(path: String(topLevel)))
         }
+        LockScreenExportCache(libraryRoot: rootURL).remove(wallpaperID: wallpaper.id)
         userWallpapers.remove(at: index)
         save()
     }
