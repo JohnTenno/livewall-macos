@@ -16,6 +16,8 @@ final class VideoRenderer: WallpaperRenderer {
         view = PlayerLayerView(player: player)
     }
 
+    func update(options: RenderOptions) { player.isMuted = options.muted }
+
     func play() { player.play() }
 
     func pause() { player.pause() }

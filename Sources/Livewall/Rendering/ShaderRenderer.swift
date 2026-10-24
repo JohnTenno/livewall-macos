@@ -28,6 +28,10 @@ final class ShaderRenderer: NSObject, WallpaperRenderer, MTKViewDelegate {
         metalView.delegate = self
     }
 
+    func update(options: RenderOptions) {
+        metalView.preferredFramesPerSecond = options.frameRate
+    }
+
     func play() {
         guard resumedAt == nil else { return }
         resumedAt = CACurrentMediaTime()

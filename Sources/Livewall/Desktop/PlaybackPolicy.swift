@@ -12,6 +12,7 @@ final class PlaybackPolicy {
     private(set) var isOnBattery = false
     private(set) var isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
 
+    private var powerSource: CFRunLoopSource?
     private var observers: [(NotificationCenter, NSObjectProtocol)] = []
 
     init() {
@@ -31,6 +32,11 @@ final class PlaybackPolicy {
 
         refreshPowerSource()
         watchPowerSource()
+    }
+
+    deinit {
+        observers.forEach { $0.0.removeObserver($0.1) }
+        if let powerSource { CFRunLoopSourceInvalidate(powerSource) }
     }
 
     func allowsPlayback(settings: AppSettings) -> Bool {
@@ -64,7 +70,8 @@ final class PlaybackPolicy {
             }
         }, context)
         if let source = source?.takeRetainedValue() {
-            CFRunLoopAddSource(CFRunLoopGetMain(), source, .defaultMode)
+            powerSource = source
+            CFRunLoopAddSource(CFRunLoopGetMain(), source, .commonModes)
         }
     }
 

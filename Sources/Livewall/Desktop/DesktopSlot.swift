@@ -8,6 +8,7 @@ final class DesktopSlot {
 
     private let window: DesktopWindow
     private var renderer: WallpaperRenderer?
+    private var isPlaying: Bool?
     private var occlusionObserver: NSObjectProtocol?
 
     init(screen: NSScreen, isPrimary: Bool) {
@@ -26,6 +27,7 @@ final class DesktopSlot {
     func show(_ newRenderer: WallpaperRenderer) {
         renderer?.tearDown()
         renderer = newRenderer
+        isPlaying = nil
         window.contentView = newRenderer.view
         window.orderFrontRegardless()
     }
@@ -34,11 +36,18 @@ final class DesktopSlot {
     func clear() {
         renderer?.tearDown()
         renderer = nil
+        isPlaying = nil
         window.orderOut(nil)
         window.contentView = nil
     }
 
+    func update(options: RenderOptions) {
+        renderer?.update(options: options)
+    }
+
     func setPlaying(_ playing: Bool) {
+        guard renderer != nil, isPlaying != playing else { return }
+        isPlaying = playing
         if playing {
             renderer?.play()
         } else {

@@ -4,6 +4,7 @@ import AppKit
 @MainActor
 protocol WallpaperRenderer: AnyObject {
     var view: NSView { get }
+    func update(options: RenderOptions)
     func play()
     func pause()
     /// Releases players, GPU work and web content. The renderer is unusable afterwards.

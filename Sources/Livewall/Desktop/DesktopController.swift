@@ -20,6 +20,7 @@ final class DesktopController: ObservableObject {
     }
 
     func start() {
+        guard cancellables.isEmpty else { return }
         policy.onChange = { [weak self] in self?.updatePlayback() }
 
         NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)
@@ -27,13 +28,17 @@ final class DesktopController: ObservableObject {
             .store(in: &cancellables)
 
         // @Published emits on willSet, so hop to the next main-queue turn to read the updated values.
-        Publishers.Merge3(
-            settings.$selectedWallpaperID.dropFirst().map { _ in () },
-            settings.$muted.dropFirst().map { _ in () },
-            settings.$frameRate.dropFirst().map { _ in () }
+        settings.$selectedWallpaperID.removeDuplicates().dropFirst()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] _ in self?.applyWallpaper() }
+        .store(in: &cancellables)
+
+        Publishers.Merge(
+            settings.$muted.removeDuplicates().dropFirst().map { _ in () },
+            settings.$frameRate.removeDuplicates().dropFirst().map { _ in () }
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] in self?.applyWallpaper() }
+        .sink { [weak self] in self?.updateOptions() }
         .store(in: &cancellables)
 
         Publishers.Merge3(
@@ -49,6 +54,12 @@ final class DesktopController: ObservableObject {
     }
 
     func stop() {
+        cancellables.removeAll()
+        policy.onChange = nil
+        closeSlots()
+    }
+
+    private func closeSlots() {
         slots.forEach { $0.close() }
         slots.removeAll()
     }
@@ -59,7 +70,7 @@ final class DesktopController: ObservableObject {
     }
 
     private func rebuildSlots() {
-        stop()
+        closeSlots()
         let primary = NSScreen.screens.first
         slots = NSScreen.screens.map { screen in
             let slot = DesktopSlot(screen: screen, isPrimary: screen == primary)
@@ -87,6 +98,12 @@ final class DesktopController: ObservableObject {
             }
         }
         updatePlayback()
+    }
+
+    private func updateOptions() {
+        for slot in slots {
+            slot.update(options: RenderOptions(muted: settings.muted || !slot.isPrimary, frameRate: settings.frameRate))
+        }
     }
 
     private func updatePlayback() {
