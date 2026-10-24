@@ -87,8 +87,11 @@ final class AerialMovieEncoder {
 
     private func encodeFrame(_ pixels: CVImageBuffer, index: Int, session: VTCompressionSession,
                              collector: EncodedSampleCollector) async throws {
+        try Task.checkCancellation()
+        if let error = collector.error { throw error }
         // Keep the encoder's queue short so decoded 4K frames are not piling up in memory.
         while pendingFrameCount(session) > 8 {
+            if let error = collector.error { throw error }
             try await Task.sleep(for: .milliseconds(1))
         }
         let pts = CMTimeMultiply(format.frameDuration, multiplier: Int32(index))
@@ -189,8 +192,13 @@ final class AerialMovieEncoder {
             throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "could not write")
         }
         writer.startSession(atSourceTime: .zero)
+        defer { if writer.status == .writing { writer.cancelWriting() } }
         for sample in samples {
+            try Task.checkCancellation()
             while !input.isReadyForMoreMediaData {
+                guard writer.status == .writing else {
+                    throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "writer stopped")
+                }
                 try await Task.sleep(for: .milliseconds(1))
             }
             guard input.append(sample) else {

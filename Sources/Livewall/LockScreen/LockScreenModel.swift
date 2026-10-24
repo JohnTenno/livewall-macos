@@ -28,13 +28,15 @@ final class LockScreenModel: ObservableObject {
     }
 
     func apply(_ wallpaper: Wallpaper) {
+        guard !isWorking else { return }
         refresh()
         guard let aerial else { return fail(LockScreenError.noAerialSelected) }
         guard aerial.isDownloaded else { return fail(LockScreenError.aerialNotDownloaded(aerial.name)) }
 
         let temp = FileManager.default.temporaryDirectory
-        let recording = temp.appending(path: "livewall-lockscreen-recording.mov")
-        let encoded = temp.appending(path: "livewall-lockscreen-aerial.mov")
+        let exportID = UUID().uuidString
+        let recording = temp.appending(path: "livewall-\(exportID)-recording.mov")
+        let encoded = temp.appending(path: "livewall-\(exportID)-aerial.mov")
         let report: (Double) -> Void = { [weak self] value in
             Task { @MainActor in self?.progress = value }
         }
@@ -68,6 +70,10 @@ final class LockScreenModel: ObservableObject {
         Task {
             do {
                 try await Task.detached(priority: .userInitiated) {
+                    defer {
+                        try? FileManager.default.removeItem(at: recording)
+                        try? FileManager.default.removeItem(at: encoded)
+                    }
                     let (source, offset) = try await makeSource()
                     // Must cover every point of interest of Apple's original, or the lock screen freezes on resume.
                     let original = await AerialMovieEncoder.duration(of: store.originalVideoURL(for: aerial))
@@ -75,8 +81,6 @@ final class LockScreenModel: ObservableObject {
                         report(offset + value * (1 - offset))
                     }
                     try store.install(encoded, for: aerial)
-                    try? FileManager.default.removeItem(at: recording)
-                    try? FileManager.default.removeItem(at: encoded)
                 }.value
                 status = "Done. Lock the screen (⌃⌘Q) to see it."
             } catch {
@@ -90,7 +94,7 @@ final class LockScreenModel: ObservableObject {
     }
 
     func restore() {
-        guard let aerial else { return }
+        guard !isWorking, let aerial else { return }
         do {
             try store.restore(aerial)
             status = "Restored the original Aerial “\(aerial.name)”."

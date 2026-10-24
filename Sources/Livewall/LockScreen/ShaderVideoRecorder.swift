@@ -39,9 +39,14 @@ final class ShaderVideoRecorder {
         writer.add(input)
         guard writer.startWriting() else { throw failure(writer) }
         writer.startSession(atSourceTime: .zero)
+        defer { if writer.status == .writing { writer.cancelWriting() } }
 
         for frame in 0..<spec.frameCount {
+            try Task.checkCancellation()
             while !input.isReadyForMoreMediaData {
+                guard writer.status == .writing else {
+                    throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "writer stopped")
+                }
                 try await Task.sleep(for: .milliseconds(2))
             }
             let buffer = try makePixelBuffer(adaptor)
