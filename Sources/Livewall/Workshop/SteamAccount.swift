@@ -34,7 +34,7 @@ final class SteamAccount: ObservableObject {
         do {
             guard !trimmedUsername.isEmpty else { throw WorkshopError.missingUsername }
             try steamCMD.openLoginTerminal(username: trimmedUsername)
-            loginMessage = "Escribe tu contraseña y el código de Steam Guard en la Terminal. Se cierra sola al terminar."
+            loginMessage = "Type your password and Steam Guard code in Terminal. It closes by itself when done."
         } catch {
             loginMessage = error.localizedDescription
         }

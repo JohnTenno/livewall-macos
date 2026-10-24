@@ -20,7 +20,7 @@ final class ShaderVideoRecorder {
 
         var cache: CVMetalTextureCache?
         CVMetalTextureCacheCreate(nil, nil, pipeline.device, nil, &cache)
-        guard let cache else { throw LockScreenError.encodingFailed("no se pudo crear la caché de texturas") }
+        guard let cache else { throw LockScreenError.encodingFailed("could not create the texture cache") }
         textureCache = cache
     }
 
@@ -64,7 +64,7 @@ final class ShaderVideoRecorder {
         if let pool = adaptor.pixelBufferPool {
             CVPixelBufferPoolCreatePixelBuffer(nil, pool, &buffer)
         }
-        guard let buffer else { throw LockScreenError.encodingFailed("sin búfer de imagen") }
+        guard let buffer else { throw LockScreenError.encodingFailed("no pixel buffer") }
         return buffer
     }
 
@@ -75,7 +75,7 @@ final class ShaderVideoRecorder {
         )
         guard let metalTexture, let texture = CVMetalTextureGetTexture(metalTexture),
               let commandBuffer = commandQueue.makeCommandBuffer()
-        else { throw LockScreenError.encodingFailed("no se pudo preparar el cuadro \(frame)") }
+        else { throw LockScreenError.encodingFailed("could not prepare frame \(frame)") }
 
         let time = Double(frame) / Double(spec.frameRate)
         encodePass(commandBuffer, texture: texture, pipeline: pipeline, time: time, blendWeight: nil)
@@ -112,6 +112,6 @@ final class ShaderVideoRecorder {
     }
 
     private func failure(_ writer: AVAssetWriter) -> Error {
-        LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "error desconocido del codificador")
+        LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "unknown encoder error")
     }
 }

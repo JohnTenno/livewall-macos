@@ -23,7 +23,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>26.0</string>
   <key>LSUIElement</key><true/>
   <key>NSHighResolutionCapable</key><true/>
-  <key>NSAppleEventsUsageDescription</key><string>Abre Terminal para que inicies sesión en SteamCMD.</string>
+  <key>NSAppleEventsUsageDescription</key><string>Opens Terminal so you can log in to SteamCMD.</string>
 </dict>
 </plist>
 PLIST

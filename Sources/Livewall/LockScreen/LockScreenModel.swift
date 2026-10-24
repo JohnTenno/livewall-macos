@@ -61,7 +61,7 @@ final class LockScreenModel: ObservableObject {
 
         isWorking = true
         progress = 0
-        status = "Generando video 4K a 240 fps de «\(wallpaper.name)»…"
+        status = "Rendering 4K 240 fps video of “\(wallpaper.name)”…"
         error = nil
 
         let store = store
@@ -78,7 +78,7 @@ final class LockScreenModel: ObservableObject {
                     try? FileManager.default.removeItem(at: recording)
                     try? FileManager.default.removeItem(at: encoded)
                 }.value
-                status = "Listo. Bloquea la pantalla (⌃⌘Q) para verlo."
+                status = "Done. Lock the screen (⌃⌘Q) to see it."
             } catch {
                 fail(error)
             }
@@ -93,7 +93,7 @@ final class LockScreenModel: ObservableObject {
         guard let aerial else { return }
         do {
             try store.restore(aerial)
-            status = "Se restauró el Aerial original «\(aerial.name)»."
+            status = "Restored the original Aerial “\(aerial.name)”."
             error = nil
         } catch {
             fail(error)

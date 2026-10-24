@@ -13,7 +13,7 @@ final class WorkshopImporter {
         let project = try WallpaperEngineProject.load(from: folder)
         let title = project.title ?? fallbackTitle
         guard let file = project.file, !file.isEmpty else {
-            throw WorkshopError.unsupportedProject(project.type ?? "desconocido")
+            throw WorkshopError.unsupportedProject(project.type ?? "unknown")
         }
 
         switch project.type?.lowercased() {
@@ -23,7 +23,7 @@ final class WorkshopImporter {
             // Keep the whole folder: the page loads scripts, images and project.json relative to itself.
             return try library.importWebFolder(at: folder, entryFile: file, name: title)
         default:
-            throw WorkshopError.unsupportedProject(project.type ?? "desconocido")
+            throw WorkshopError.unsupportedProject(project.type ?? "unknown")
         }
     }
 }

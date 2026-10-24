@@ -50,7 +50,7 @@ struct WorkshopItemCard: View {
                 Link(destination: item.pageURL) {
                     Image(systemName: "arrow.up.right.square")
                 }
-                .help("Abrir en Steam")
+                .help("Open in Steam")
             }
         }
         .padding(8)
@@ -60,16 +60,16 @@ struct WorkshopItemCard: View {
     @ViewBuilder
     private var actionButton: some View {
         if isImported {
-            Label("En la biblioteca", systemImage: "checkmark.circle.fill").foregroundStyle(.green).font(.callout)
+            Label("In library", systemImage: "checkmark.circle.fill").foregroundStyle(.green).font(.callout)
         } else if isDownloading {
             HStack(spacing: 6) {
                 ProgressView().controlSize(.small)
-                Text("Descargando…").font(.callout)
+                Text("Downloading…").font(.callout)
             }
         } else if item.type?.isSupported ?? false {
-            Button("Descargar y aplicar", action: onDownload)
+            Button("Download and apply", action: onDownload)
         } else {
-            Text("No compatible").font(.callout).foregroundStyle(.secondary)
+            Text("Not supported").font(.callout).foregroundStyle(.secondary)
         }
     }
 }

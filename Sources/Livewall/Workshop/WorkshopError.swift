@@ -12,14 +12,14 @@ enum WorkshopError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .missingAPIKey: "Pon tu API key de Steam en Ajustes → Steam."
-        case .missingUsername: "Pon tu usuario de Steam en Ajustes → Steam."
-        case .invalidAPIKey: "Steam rechazó la API key. Revísala en Ajustes → Steam."
-        case .http(let status): "Steam respondió con el error HTTP \(status)."
-        case .steamCMDMissing: "SteamCMD no está instalado."
-        case .notLoggedIn: "SteamCMD no tiene tu sesión guardada. Usa «Iniciar sesión en SteamCMD» en Ajustes → Steam."
-        case .downloadFailed(let reason): "La descarga falló: \(reason)"
-        case .unsupportedProject(let type): "Livewall no puede reproducir fondos de tipo «\(type)»."
+        case .missingAPIKey: "Enter your Steam API key in Settings → Steam."
+        case .missingUsername: "Enter your Steam username in Settings → Steam."
+        case .invalidAPIKey: "Steam rejected the API key. Check it in Settings → Steam."
+        case .http(let status): "Steam responded with HTTP error \(status)."
+        case .steamCMDMissing: "SteamCMD is not installed."
+        case .notLoggedIn: "SteamCMD has no saved session. Use “Log in to SteamCMD” in Settings → Steam."
+        case .downloadFailed(let reason): "Download failed: \(reason)"
+        case .unsupportedProject(let type): "Livewall cannot play “\(type)” wallpapers."
         }
     }
 }

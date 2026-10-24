@@ -29,7 +29,7 @@ final class SteamCMD {
         var error: NSDictionary?
         NSAppleScript(source: source)?.executeAndReturnError(&error)
         if let error {
-            throw WorkshopError.downloadFailed(error[NSAppleScript.errorMessage] as? String ?? "no se pudo abrir Terminal")
+            throw WorkshopError.downloadFailed(error[NSAppleScript.errorMessage] as? String ?? "could not open Terminal")
         }
     }
 
@@ -61,7 +61,7 @@ final class SteamCMD {
             throw WorkshopError.notLoggedIn
         }
         let errorLine = output.split(separator: "\n").last { $0.contains("ERROR") || $0.contains("FAILED") }
-        throw WorkshopError.downloadFailed(errorLine.map(String.init) ?? "SteamCMD no reportó la carpeta descargada")
+        throw WorkshopError.downloadFailed(errorLine.map(String.init) ?? "SteamCMD did not report the downloaded folder")
     }
 
     private func run(_ arguments: [String]) async throws -> String {

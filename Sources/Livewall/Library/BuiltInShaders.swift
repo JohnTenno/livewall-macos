@@ -12,7 +12,7 @@ enum BuiltInShaders {
     private static let entries: [Entry] = [
         Entry(id: "6F1D2C1A-4B7E-4C11-9C1E-0A0000000001", key: "aurora", name: "Aurora", source: aurora),
         Entry(id: "6F1D2C1A-4B7E-4C11-9C1E-0A0000000002", key: "plasma", name: "Plasma", source: plasma),
-        Entry(id: "6F1D2C1A-4B7E-4C11-9C1E-0A0000000003", key: "ripples", name: "Ondas", source: ripples),
+        Entry(id: "6F1D2C1A-4B7E-4C11-9C1E-0A0000000003", key: "ripples", name: "Ripples", source: ripples),
     ]
 
     static let wallpapers: [Wallpaper] = entries.map {

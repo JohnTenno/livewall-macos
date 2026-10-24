@@ -9,7 +9,7 @@ struct AddWebsiteSheet: View {
 
     var body: some View {
         Form {
-            TextField("Dirección", text: $form.address)
+            TextField("Address", text: $form.address)
             TextField("Nombre (opcional)", text: $form.name)
             if let error = form.error {
                 Text(error).foregroundStyle(.red).font(.callout)
@@ -19,10 +19,10 @@ struct AddWebsiteSheet: View {
         .frame(width: 420)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Cancelar") { dismiss() }
+                Button("Cancel") { dismiss() }
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Añadir") {
+                Button("Add") {
                     if form.submit(library: library, settings: settings) { dismiss() }
                 }
             }

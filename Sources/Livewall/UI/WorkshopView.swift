@@ -23,20 +23,20 @@ struct WorkshopView: View {
 
             if workshop.needsLogin {
                 HStack {
-                    Text("Después de iniciar sesión, vuelve a pulsar «Descargar y aplicar».")
+                    Text("After logging in, press “Download and apply” again.")
                         .font(.callout)
                     Spacer()
-                    Button("Iniciar sesión en SteamCMD…") { account.openLoginTerminal() }
+                    Button("Log in to SteamCMD…") { account.openLoginTerminal() }
                 }
                 .padding(10)
             }
 
             if account.trimmedAPIKey.isEmpty {
-                ContentUnavailableView("Falta la API key", systemImage: "key",
-                                       description: Text("Agrégala en la pestaña Ajustes → Steam."))
+                ContentUnavailableView("API key missing", systemImage: "key",
+                                       description: Text("Add it in the Settings → Steam tab."))
             } else if workshop.items.isEmpty && !workshop.isLoading {
-                ContentUnavailableView("Busca fondos", systemImage: "magnifyingglass",
-                                       description: Text("Solo se muestran fondos de video y web, los que Livewall puede reproducir."))
+                ContentUnavailableView("Search wallpapers", systemImage: "magnifyingglass",
+                                       description: Text("Only video and web wallpapers are shown, the ones Livewall can play."))
             } else {
                 results
             }
@@ -48,22 +48,22 @@ struct WorkshopView: View {
 
     private var searchBar: some View {
         HStack {
-            TextField("Buscar en el Workshop", text: $workshop.query.text)
+            TextField("Search the Workshop", text: $workshop.query.text)
                 .textFieldStyle(.roundedBorder)
                 .onSubmit { workshop.search() }
-            Picker("Tipo", selection: $workshop.query.type) {
-                Text("Video y web").tag(WorkshopItemType?.none)
+            Picker("Type", selection: $workshop.query.type) {
+                Text("Video and web").tag(WorkshopItemType?.none)
                 ForEach(WorkshopItemType.allCases.filter(\.isSupported)) { type in
                     Text(type.displayName).tag(Optional(type))
                 }
             }
             .fixedSize()
-            Picker("Orden", selection: $workshop.query.sort) {
+            Picker("Sort", selection: $workshop.query.sort) {
                 ForEach(WorkshopSort.allCases) { Text($0.displayName).tag($0) }
             }
             .fixedSize()
             Toggle("+18", isOn: $workshop.query.includeMature)
-            Button("Buscar", systemImage: "magnifyingglass") { workshop.search() }
+            Button("Search", systemImage: "magnifyingglass") { workshop.search() }
                 .keyboardShortcut(.defaultAction)
         }
         .labelsHidden()
@@ -93,7 +93,7 @@ struct WorkshopView: View {
             if workshop.isLoading {
                 ProgressView().padding()
             }
-            Text("\(workshop.items.count) de \(workshop.total)")
+            Text("\(workshop.items.count) of \(workshop.total)")
                 .font(.caption).foregroundStyle(.secondary).padding(.bottom, 8)
         }
     }

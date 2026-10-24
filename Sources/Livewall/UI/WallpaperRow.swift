@@ -21,15 +21,15 @@ struct WallpaperRow: View {
             Spacer()
 
             if isSelected {
-                Label("Activo", systemImage: "checkmark.circle.fill")
+                Label("Active", systemImage: "checkmark.circle.fill")
                     .labelStyle(.titleAndIcon)
                     .foregroundStyle(Color.accentColor)
             } else {
-                Button("Aplicar", action: onApply)
+                Button("Apply", action: onApply)
             }
 
             if let onRemove {
-                Button("Eliminar", systemImage: "trash", role: .destructive, action: onRemove)
+                Button("Delete", systemImage: "trash", role: .destructive, action: onRemove)
                     .labelStyle(.iconOnly)
                     .buttonStyle(.borderless)
             }
@@ -41,7 +41,7 @@ struct WallpaperRow: View {
 
     private var subtitle: String {
         switch wallpaper.source {
-        case .builtInShader: "\(wallpaper.kind.displayName) · incluido"
+        case .builtInShader: "\(wallpaper.kind.displayName) · built-in"
         case .remote(let url): "\(wallpaper.kind.displayName) · \(url.absoluteString)"
         case .libraryFile: wallpaper.kind.displayName
         }

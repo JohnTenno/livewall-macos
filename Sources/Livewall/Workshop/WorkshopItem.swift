@@ -31,7 +31,7 @@ struct WorkshopItem: Identifiable, Decodable, Hashable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
-        title = try container.decodeIfPresent(String.self, forKey: .title) ?? "Sin título"
+        title = try container.decodeIfPresent(String.self, forKey: .title) ?? "Untitled"
         previewURL = try? container.decodeIfPresent(URL.self, forKey: .previewURL)
         // Steam encodes 64-bit numbers as strings.
         fileSize = (try? container.decode(String.self, forKey: .fileSize)).flatMap(UInt64.init)

@@ -11,17 +11,17 @@ enum LockScreenError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noAerialSelected:
-            "Elige un fondo Aerial en Ajustes del Sistema → Fondo de pantalla."
+            "Choose an Aerial wallpaper in System Settings → Wallpaper."
         case .aerialNotDownloaded(let name):
-            "El Aerial «\(name)» aún no se descarga. Espera a que termine en Ajustes del Sistema."
+            "The Aerial “\(name)” is not downloaded yet. Wait for it to finish in System Settings."
         case .unsupportedKind(let kind):
-            "Los fondos de tipo \(kind.displayName) no se pueden usar en la pantalla de bloqueo. Usa un video o un shader."
+            "\(kind.displayName) wallpapers cannot be used on the lock screen. Use a video or a shader."
         case .noVideoTrack:
-            "El archivo no tiene pista de video."
+            "The file has no video track."
         case .encodingFailed(let reason):
-            "No se pudo generar el video: \(reason)"
+            "Could not render the video: \(reason)"
         case .noBackup:
-            "No hay respaldo del Aerial original."
+            "There is no backup of the original Aerial."
         }
     }
 }

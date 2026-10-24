@@ -16,8 +16,8 @@ enum WorkshopItemType: String, CaseIterable, Identifiable {
         switch self {
         case .video: "Video"
         case .web: "Web"
-        case .scene: "Escena"
-        case .application: "Aplicación"
+        case .scene: "Scene"
+        case .application: "Application"
         }
     }
 

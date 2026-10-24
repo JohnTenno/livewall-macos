@@ -24,12 +24,12 @@ struct LibraryView: View {
             }
 
             List {
-                Section("Incluidos") {
+                Section("Built-in") {
                     ForEach(BuiltInShaders.wallpapers) { row(for: $0) }
                 }
-                Section("Mis fondos") {
+                Section("My wallpapers") {
                     if library.userWallpapers.isEmpty {
-                        Text("Importa un video, una página HTML, una carpeta con index.html o un shader .metal.")
+                        Text("Import a video, an HTML page, a folder with index.html or a .metal shader.")
                             .foregroundStyle(.secondary)
                     }
                     ForEach(library.userWallpapers) { row(for: $0) }
@@ -38,9 +38,9 @@ struct LibraryView: View {
         }
         .toolbar {
             ToolbarItemGroup {
-                Button("Recargar", systemImage: "arrow.clockwise") { desktop.reload() }
-                Button("Sitio web…", systemImage: "globe") { model.isAddingWebsite = true }
-                Button("Importar…", systemImage: "plus") { model.isImporting = true }
+                Button("Reload", systemImage: "arrow.clockwise") { desktop.reload() }
+                Button("Website…", systemImage: "globe") { model.isAddingWebsite = true }
+                Button("Import…", systemImage: "plus") { model.isImporting = true }
             }
         }
         .fileImporter(isPresented: $model.isImporting, allowedContentTypes: Self.importTypes, allowsMultipleSelection: true) { result in
@@ -49,7 +49,7 @@ struct LibraryView: View {
         .sheet(isPresented: $model.isAddingWebsite) {
             AddWebsiteSheet()
         }
-        .alert("No se pudo importar", isPresented: Binding(get: { model.importError != nil }, set: { if !$0 { model.importError = nil } })) {
+        .alert("Import failed", isPresented: Binding(get: { model.importError != nil }, set: { if !$0 { model.importError = nil } })) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(model.importError ?? "")

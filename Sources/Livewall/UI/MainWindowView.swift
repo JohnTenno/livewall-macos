@@ -5,16 +5,16 @@ struct MainWindowView: View {
 
     var body: some View {
         TabView {
-            Tab("Biblioteca", systemImage: "square.grid.2x2") {
+            Tab("Library", systemImage: "square.grid.2x2") {
                 LibraryView()
             }
             Tab("Workshop", systemImage: "cloud") {
                 WorkshopView()
             }
-            Tab("Bloqueo", systemImage: "lock.display") {
+            Tab("Lock Screen", systemImage: "lock.display") {
                 LockScreenView()
             }
-            Tab("Ajustes", systemImage: "gearshape") {
+            Tab("Settings", systemImage: "gearshape") {
                 SettingsView()
             }
         }

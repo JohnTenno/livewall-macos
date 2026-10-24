@@ -55,7 +55,7 @@ final class AerialMovieEncoder {
             output.videoComposition = composition
             reader.add(output)
             guard reader.startReading() else {
-                throw LockScreenError.encodingFailed(reader.error?.localizedDescription ?? "no se pudo leer el video")
+                throw LockScreenError.encodingFailed(reader.error?.localizedDescription ?? "could not read the video")
             }
 
             guard var current = output.copyNextSampleBuffer() else { throw LockScreenError.noVideoTrack }
@@ -116,7 +116,7 @@ final class AerialMovieEncoder {
             compressionSessionOut: &created
         )
         guard status == noErr, let session = created else {
-            throw LockScreenError.encodingFailed("no hay codificador HEVC por hardware (\(status))")
+            throw LockScreenError.encodingFailed("no hardware HEVC encoder (\(status))")
         }
 
         let properties: [(CFString, CFTypeRef)] = [
@@ -138,7 +138,7 @@ final class AerialMovieEncoder {
             let status = VTSessionSetProperty(session, key: key, value: value)
             guard status == noErr else {
                 VTCompressionSessionInvalidate(session)
-                throw LockScreenError.encodingFailed("el codificador no acepta \(key) (\(status))")
+                throw LockScreenError.encodingFailed("the encoder rejects \(key) (\(status))")
             }
         }
         VTCompressionSessionPrepareToEncodeFrames(session)
@@ -177,7 +177,7 @@ final class AerialMovieEncoder {
 
     private func write(_ samples: [CMSampleBuffer], to url: URL) async throws {
         guard let first = samples.first, let hint = CMSampleBufferGetFormatDescription(first) else {
-            throw LockScreenError.encodingFailed("el codificador no produjo cuadros")
+            throw LockScreenError.encodingFailed("the encoder produced no frames")
         }
         try? FileManager.default.removeItem(at: url)
         let writer = try AVAssetWriter(outputURL: url, fileType: .mov)
@@ -186,7 +186,7 @@ final class AerialMovieEncoder {
         input.expectsMediaDataInRealTime = false
         writer.add(input)
         guard writer.startWriting() else {
-            throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "no se pudo escribir")
+            throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "could not write")
         }
         writer.startSession(atSourceTime: .zero)
         for sample in samples {
@@ -194,13 +194,13 @@ final class AerialMovieEncoder {
                 try await Task.sleep(for: .milliseconds(1))
             }
             guard input.append(sample) else {
-                throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "no se pudo escribir un cuadro")
+                throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "could not write a frame")
             }
         }
         input.markAsFinished()
         await writer.finishWriting()
         guard writer.status == .completed else {
-            throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "no se pudo cerrar el archivo")
+            throw LockScreenError.encodingFailed(writer.error?.localizedDescription ?? "could not finish the file")
         }
     }
 }

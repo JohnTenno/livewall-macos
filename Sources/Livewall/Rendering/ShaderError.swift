@@ -7,9 +7,9 @@ enum ShaderError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noMetalDevice: "Este Mac no tiene un dispositivo Metal disponible."
-        case .missingSource: "No se encontró el código del shader."
-        case .compileFailed(let log): "El shader no compila:\n\(log)"
+        case .noMetalDevice: "This Mac has no Metal device available."
+        case .missingSource: "Shader source not found."
+        case .compileFailed(let log): "The shader does not compile:\n\(log)"
         }
     }
 }

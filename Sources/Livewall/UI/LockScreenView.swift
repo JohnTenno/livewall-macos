@@ -11,27 +11,27 @@ struct LockScreenView: View {
 
     var body: some View {
         Form {
-            Section("Aerial que se reemplaza") {
+            Section("Aerial being replaced") {
                 if let aerial = lockScreen.aerial {
                     LabeledContent("Aerial", value: aerial.name)
-                    LabeledContent("Estado", value: aerial.isDownloaded ? (lockScreen.hasBackup ? "Usando video de Livewall" : "Original de Apple") : "Sin descargar")
+                    LabeledContent("Status", value: aerial.isDownloaded ? (lockScreen.hasBackup ? "Using Livewall video" : "Apple original") : "Not downloaded")
                 } else {
-                    Text("Elige un fondo Aerial en Ajustes del Sistema → Fondo de pantalla y vuelve aquí.")
+                    Text("Choose an Aerial wallpaper in System Settings → Wallpaper, then come back here.")
                         .foregroundStyle(.secondary)
                 }
                 Button("Volver a detectar") { lockScreen.refresh() }
             }
 
-            Section("Usar en la pantalla de bloqueo") {
+            Section("Use on lock screen") {
                 if let wallpaper = currentWallpaper {
-                    Button("Usar «\(wallpaper.name)» en la pantalla de bloqueo") { lockScreen.apply(wallpaper) }
+                    Button("Use “\(wallpaper.name)” on lock screen") { lockScreen.apply(wallpaper) }
                         .disabled(lockScreen.isWorking || lockScreen.aerial == nil || wallpaper.kind == .web)
                     if wallpaper.kind == .web {
-                        Text("Los fondos web no se pueden convertir; usa un video o un shader.")
+                        Text("Web wallpapers cannot be converted; use a video or a shader.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 } else {
-                    Text("Primero elige un fondo de Livewall.").foregroundStyle(.secondary)
+                    Text("Choose a Livewall wallpaper first.").foregroundStyle(.secondary)
                 }
 
                 if lockScreen.isWorking {
@@ -52,7 +52,7 @@ struct LockScreenView: View {
             Section {
                 Button("Restaurar Aerial original", role: .destructive) { lockScreen.restore() }
                     .disabled(!lockScreen.hasBackup || lockScreen.isWorking)
-                Text("Livewall reemplaza el video en caché del Aerial elegido y guarda el original. Los shaders se graban como un loop de 30 s en 4K.")
+                Text("Livewall replaces the cached video of the selected Aerial and keeps the original. Shaders are recorded as a 30 s 4K loop.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }

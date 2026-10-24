@@ -7,8 +7,8 @@ struct MenuBarContent: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Picker("Fondo", selection: $settings.selectedWallpaperID) {
-            Text("Fondo del sistema").tag(UUID?.none)
+        Picker("Wallpaper", selection: $settings.selectedWallpaperID) {
+            Text("System wallpaper").tag(UUID?.none)
             ForEach(library.wallpapers) { wallpaper in
                 Label(wallpaper.name, systemImage: wallpaper.kind.systemImage).tag(Optional(wallpaper.id))
             }
@@ -17,10 +17,10 @@ struct MenuBarContent: View {
 
         Divider()
 
-        Toggle("Pausar", isOn: $settings.isPaused)
+        Toggle("Pause", isOn: $settings.isPaused)
             .keyboardShortcut("p")
 
-        Button("Abrir biblioteca…") {
+        Button("Open library…") {
             openWindow(id: MainWindowView.windowID)
             NSApp.activate()
         }
@@ -28,7 +28,7 @@ struct MenuBarContent: View {
 
         Divider()
 
-        Button("Salir de Livewall") { NSApp.terminate(nil) }
+        Button("Quit Livewall") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
     }
 }
