@@ -26,12 +26,15 @@ struct WallpaperRow: View {
                     .foregroundStyle(Color.accentColor)
             } else {
                 Button("Apply", action: onApply)
+                    .buttonStyle(.glass)
+                    .help("Set as desktop wallpaper on every display (or double-click the row)")
             }
 
             if let onRemove {
                 Button("Delete", systemImage: "trash", role: .destructive, action: onRemove)
                     .labelStyle(.iconOnly)
                     .buttonStyle(.borderless)
+                    .help("Remove from the library; imported files are deleted too")
             }
         }
         .padding(.vertical, 4)

@@ -9,8 +9,10 @@ struct AddWebsiteSheet: View {
 
     var body: some View {
         Form {
-            TextField("Address", text: $form.address)
-            TextField("Nombre (opcional)", text: $form.name)
+            TextField("Address", text: $form.address, prompt: Text("https://example.com"))
+            TextField("Name (optional)", text: $form.name, prompt: Text("Shown in your library"))
+            Text("Web pages keep running in the background like a browser tab; animated pages use more CPU than a video.")
+                .font(.caption).foregroundStyle(.secondary)
             if let error = form.error {
                 Text(error).foregroundStyle(.red).font(.callout)
             }

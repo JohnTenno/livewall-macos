@@ -18,6 +18,8 @@ struct MainWindowView: View {
                 SettingsView()
             }
         }
+        // Sidebar tabs get the system Liquid Glass sidebar, like System Settings.
+        .tabViewStyle(.sidebarAdaptable)
         .frame(minWidth: 760, minHeight: 520)
     }
 }

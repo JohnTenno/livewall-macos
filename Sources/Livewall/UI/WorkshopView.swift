@@ -10,15 +10,9 @@ struct WorkshopView: View {
     var body: some View {
         VStack(spacing: 0) {
             searchBar
-            Divider()
 
             if let error = workshop.error {
-                Label(error, systemImage: "exclamationmark.triangle.fill")
-                    .font(.callout)
-                    .foregroundStyle(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(10)
-                    .background(.red.opacity(0.1))
+                ErrorBanner(message: error)
             }
 
             if workshop.needsLogin {
@@ -63,11 +57,15 @@ struct WorkshopView: View {
             }
             .fixedSize()
             Toggle("+18", isOn: $workshop.query.includeMature)
+                .help("Include items marked as mature content")
             Button("Search", systemImage: "magnifyingglass") { workshop.search() }
                 .keyboardShortcut(.defaultAction)
+                .buttonStyle(.glassProminent)
         }
         .labelsHidden()
         .padding(10)
+        .glassEffect(in: .rect(cornerRadius: 16))
+        .padding([.horizontal, .top], 10)
         .onChange(of: workshop.query.type) { workshop.search() }
         .onChange(of: workshop.query.sort) { workshop.search() }
         .onChange(of: workshop.query.includeMature) { workshop.search() }

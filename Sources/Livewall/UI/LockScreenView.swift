@@ -19,13 +19,18 @@ struct LockScreenView: View {
                     Text("Choose an Aerial wallpaper in System Settings → Wallpaper, then come back here.")
                         .foregroundStyle(.secondary)
                 }
-                Button("Volver a detectar") { lockScreen.refresh() }
+                Button("Detect again") { lockScreen.refresh() }
+                    .help("Read the Aerial currently selected in System Settings → Wallpaper")
             }
 
             Section("Use on lock screen") {
                 if let wallpaper = currentWallpaper {
-                    Button("Use “\(wallpaper.name)” on lock screen") { lockScreen.apply(wallpaper) }
-                        .disabled(lockScreen.isWorking || lockScreen.aerial == nil || wallpaper.kind == .web)
+                    let alreadyApplied = lockScreen.isApplied(wallpaper)
+                    Button(alreadyApplied ? "Already on lock screen" : "Use “\(wallpaper.name)” on lock screen") { lockScreen.apply(wallpaper) }
+                        .buttonStyle(.glassProminent)
+                        .disabled(alreadyApplied || lockScreen.isWorking || lockScreen.aerial == nil || wallpaper.kind == .web)
+                    Text("The first conversion to 4K HEVC takes several minutes. Saved conversions are reused when you apply the same wallpaper again. Deleting the wallpaper also deletes its saved conversions.")
+                        .font(.caption).foregroundStyle(.secondary)
                     if wallpaper.kind == .web {
                         Text("Web wallpapers cannot be converted; use a video or a shader.")
                             .font(.caption).foregroundStyle(.secondary)
@@ -50,7 +55,7 @@ struct LockScreenView: View {
             }
 
             Section {
-                Button("Restaurar Aerial original", role: .destructive) { lockScreen.restore() }
+                Button("Restore original Aerial", role: .destructive) { lockScreen.restore() }
                     .disabled(!lockScreen.hasBackup || lockScreen.isWorking)
                 Text("Livewall replaces the cached video of the selected Aerial and keeps the original. Shaders are recorded as a 30 s 4K loop.")
                     .font(.caption).foregroundStyle(.secondary)
@@ -58,5 +63,8 @@ struct LockScreenView: View {
         }
         .formStyle(.grouped)
         .onAppear { lockScreen.refresh() }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            lockScreen.refresh()
+        }
     }
 }

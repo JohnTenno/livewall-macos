@@ -54,7 +54,8 @@ struct WorkshopItemCard: View {
             }
         }
         .padding(8)
-        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
+        // Solid on purpose: one glass layer per card in a scrolling grid costs WindowServer GPU time.
+        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 12))
     }
 
     @ViewBuilder
@@ -68,6 +69,8 @@ struct WorkshopItemCard: View {
             }
         } else if item.type?.isSupported ?? false {
             Button("Download and apply", action: onDownload)
+                .buttonStyle(.glass)
+                .help("Download with SteamCMD, add it to your library and set it as wallpaper")
         } else {
             Text("Not supported").font(.callout).foregroundStyle(.secondary)
         }

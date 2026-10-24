@@ -15,12 +15,7 @@ struct LibraryView: View {
     var body: some View {
         VStack(spacing: 0) {
             if let error = desktop.lastError {
-                Label(error, systemImage: "exclamationmark.triangle.fill")
-                    .font(.callout)
-                    .foregroundStyle(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(10)
-                    .background(.red.opacity(0.1))
+                ErrorBanner(message: error)
             }
 
             List {
@@ -39,8 +34,11 @@ struct LibraryView: View {
         .toolbar {
             ToolbarItemGroup {
                 Button("Reload", systemImage: "arrow.clockwise") { desktop.reload() }
+                    .help("Restart the active wallpaper on every display")
                 Button("Website…", systemImage: "globe") { model.isAddingWebsite = true }
+                    .help("Use a web page (http or https address) as wallpaper")
                 Button("Import…", systemImage: "plus") { model.isImporting = true }
+                    .help("Add videos, HTML pages, folders with index.html or .metal shaders")
             }
         }
         .fileImporter(isPresented: $model.isImporting, allowedContentTypes: Self.importTypes, allowsMultipleSelection: true) { result in
