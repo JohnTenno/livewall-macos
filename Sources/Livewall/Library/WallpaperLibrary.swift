@@ -88,12 +88,19 @@ final class WallpaperLibrary: ObservableObject {
         save()
     }
 
+    func setDesktopQuality(_ quality: DesktopVideoQuality, for wallpaper: Wallpaper) {
+        guard let index = userWallpapers.firstIndex(where: { $0.id == wallpaper.id }) else { return }
+        userWallpapers[index].desktopQuality = quality
+        save()
+    }
+
     func remove(_ wallpaper: Wallpaper) {
         guard let index = userWallpapers.firstIndex(where: { $0.id == wallpaper.id }) else { return }
         if case .libraryFile(let path) = wallpaper.source, let topLevel = path.split(separator: "/").first {
             try? fileManager.removeItem(at: itemsURL.appending(path: String(topLevel)))
         }
         LockScreenExportCache(libraryRoot: rootURL).remove(wallpaperID: wallpaper.id)
+        DesktopVariantStore(libraryRoot: rootURL).remove(wallpaperID: wallpaper.id)
         userWallpapers.remove(at: index)
         save()
     }

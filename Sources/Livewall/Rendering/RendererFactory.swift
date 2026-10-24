@@ -12,7 +12,7 @@ final class RendererFactory {
     func makeRenderer(for wallpaper: Wallpaper, options: RenderOptions) throws -> WallpaperRenderer {
         switch wallpaper.kind {
         case .video:
-            return VideoRenderer(url: try resolver.url(for: wallpaper), options: options)
+            return VideoRenderer(url: try resolver.desktopURL(for: wallpaper), options: options)
         case .web:
             return WebRenderer(url: try resolver.url(for: wallpaper), options: options)
         case .shader:

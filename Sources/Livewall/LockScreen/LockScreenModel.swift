@@ -6,6 +6,8 @@ final class LockScreenModel: ObservableObject {
     @Published private(set) var aerial: Aerial?
     @Published private(set) var hasBackup = false
     @Published private(set) var isWorking = false
+    /// A just-imported video the UI offers to put on the lock screen.
+    @Published var offer: Wallpaper?
     /// 0...1 while recording a shader; nil when progress is unknown or idle.
     @Published private(set) var progress: Double?
     @Published private(set) var status: String?

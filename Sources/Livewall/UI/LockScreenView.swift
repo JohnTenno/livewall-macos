@@ -29,6 +29,8 @@ struct LockScreenView: View {
                     Button(alreadyApplied ? "Already on lock screen" : "Use “\(wallpaper.name)” on lock screen") { lockScreen.apply(wallpaper) }
                         .buttonStyle(.glassProminent)
                         .disabled(alreadyApplied || lockScreen.isWorking || lockScreen.aerial == nil || wallpaper.kind == .web)
+                    Text("Always uses the original imported file, never the lighter desktop copy. For the best result use a high-quality 4K 60 fps video: macOS plays it in slow motion when you lock and unlock, and low frame rates look choppy there.")
+                        .font(.caption).foregroundStyle(.secondary)
                     Text("The first conversion to 4K HEVC takes several minutes. Saved conversions are reused when you apply the same wallpaper again. Deleting the wallpaper also deletes its saved conversions.")
                         .font(.caption).foregroundStyle(.secondary)
                     if wallpaper.kind == .web {

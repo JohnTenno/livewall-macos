@@ -1,10 +1,11 @@
 import SwiftUI
 
-struct WallpaperRow: View {
+struct WallpaperRow<Accessory: View>: View {
     let wallpaper: Wallpaper
     let isSelected: Bool
     let onApply: () -> Void
     let onRemove: (() -> Void)?
+    @ViewBuilder let accessory: Accessory
 
     var body: some View {
         HStack(spacing: 12) {
@@ -16,6 +17,7 @@ struct WallpaperRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(wallpaper.name).font(.headline)
                 Text(subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                accessory
             }
 
             Spacer()

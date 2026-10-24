@@ -6,6 +6,7 @@ struct LibraryView: View {
     @EnvironmentObject private var settings: AppSettings
     @EnvironmentObject private var library: WallpaperLibrary
     @EnvironmentObject private var desktop: DesktopController
+    @EnvironmentObject private var variants: DesktopVariantModel
 
     @StateObject private var model = LibraryViewModel()
 
@@ -60,6 +61,18 @@ struct LibraryView: View {
             isSelected: settings.selectedWallpaperID == wallpaper.id,
             onApply: { settings.selectedWallpaperID = wallpaper.id },
             onRemove: wallpaper.isBuiltIn ? nil : { model.remove(wallpaper, library: library, settings: settings) }
-        )
+        ) {
+            if wallpaper.kind == .video, !wallpaper.isBuiltIn, case .libraryFile = wallpaper.source {
+                DesktopQualityPicker(
+                    selection: wallpaper.effectiveDesktopQuality,
+                    available: variants.available(for: wallpaper),
+                    progress: variants.progress[wallpaper.id],
+                    error: variants.errors[wallpaper.id]
+                ) { quality in
+                    library.setDesktopQuality(quality, for: wallpaper)
+                    if settings.selectedWallpaperID == wallpaper.id { desktop.reload() }
+                }
+            }
+        }
     }
 }

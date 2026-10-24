@@ -21,6 +21,17 @@ final class WallpaperAssetResolver {
         }
     }
 
+    /// What the desktop plays: the chosen display-sized copy of a video when it exists, else `url(for:)`.
+    /// The lock screen keeps using `url(for:)`, i.e. the original file.
+    func desktopURL(for wallpaper: Wallpaper) throws -> URL {
+        if wallpaper.kind == .video,
+           let copy = DesktopVariantStore(libraryRoot: library.rootURL)
+               .url(wallpaperID: wallpaper.id, quality: wallpaper.effectiveDesktopQuality) {
+            return copy
+        }
+        return try url(for: wallpaper)
+    }
+
     func shaderSource(for wallpaper: Wallpaper) throws -> String {
         switch wallpaper.source {
         case .builtInShader(let key):

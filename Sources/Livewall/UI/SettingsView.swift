@@ -33,6 +33,16 @@ struct SettingsView: View {
                 Text("Livewall always pauses when the screen is locked or off, and in Low Power Mode.")
             }
 
+            Section {
+                Label("Livewall is made for high-quality wallpapers: import the best version you have (4K, 60 fps). The original is never modified.", systemImage: "sparkles")
+                Label("Desktop: Livewall makes lighter copies sized to your display in the background. Choose one under each video in the Library.", systemImage: "menubar.dock.rectangle")
+                Label("“Optimized” looks the same as the original and uses less memory. “Battery saver (30 fps)” halves CPU and GPU use with slightly less smooth motion.", systemImage: "leaf")
+                Label("Lock screen: always uses the original file, because macOS plays it in slow motion when you lock and unlock.", systemImage: "lock.display")
+            } header: {
+                Text("Video quality")
+            }
+            .font(.callout)
+
             SteamSettingsSection()
 
             Section("Audio") {
@@ -70,7 +80,7 @@ struct SettingsView: View {
     /// Explains why the frame rate setting may not change anything for the active wallpaper.
     private var frameRateNote: String? {
         switch settings.selectedWallpaperID.flatMap(library.wallpaper(id:))?.kind {
-        case .video: "Your active wallpaper is a video, so this setting does not change it. A video that matches your screen resolution (instead of 4K) is much lighter."
+        case .video: "Your active wallpaper is a video, so this setting does not change it. To make a video lighter, choose “Battery saver (30 fps)” under it in the Library."
         case .web: "Your active wallpaper is a web page; the page itself decides its frame rate."
         case .shader, nil: nil
         }

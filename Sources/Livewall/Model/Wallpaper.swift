@@ -6,6 +6,10 @@ struct Wallpaper: Identifiable, Codable, Hashable {
     var name: String
     var kind: WallpaperKind
     var source: WallpaperSource
+    /// Videos only; nil means the recommended optimized copy once it exists.
+    var desktopQuality: DesktopVideoQuality? = nil
+
+    var effectiveDesktopQuality: DesktopVideoQuality { desktopQuality ?? .optimized }
 
     var isBuiltIn: Bool {
         if case .builtInShader = source { return true }
