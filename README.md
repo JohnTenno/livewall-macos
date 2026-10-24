@@ -13,6 +13,20 @@ A lightweight Wallpaper Engine–style live wallpaper app for macOS, written in 
 - **Lock screen**: renders the current video or shader to a 4K HEVC loop and swaps it into the Aerial selected in System Settings (original kept as a backup, restorable).
 - **Steam Workshop**: searches Wallpaper Engine items through the Steam Web API and downloads video/web ones with SteamCMD using your own Steam session (requires owning Wallpaper Engine). Scene and application items are not supported.
 
+## Resource usage
+
+Measured on a MacBook Pro M1 (8 GB, macOS 27) on battery, with a 2560×1436 H.264 video wallpaper:
+
+| | Livewall running | Livewall quit |
+|---|---|---|
+| Battery draw (whole Mac, idle desktop) | ~4.0 W | ~3.1 W |
+| Livewall process | ~6 % CPU, ~75 MB RAM | — |
+| Hardware video decoder (`VTDecoderXPCService`) | ~6 % CPU, ~120 MB RAM | — |
+
+So a video wallpaper costs roughly **+1 W** while the desktop is visible. Playback pauses (and that cost drops to
+near zero) when a window covers the desktop, the screen is locked or asleep, in Low Power Mode, and optionally on battery.
+Shaders cost more or less depending on the shader and the FPS setting.
+
 ## Build
 
 ```sh
