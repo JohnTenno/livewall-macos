@@ -16,6 +16,42 @@ final class SteamCMD {
 
     var isInstalled: Bool { FileManager.default.isExecutableFile(atPath: script.path) }
 
+    /// Downloads and installs SteamCMD into the target root directory.
+    func install(from url: URL = URL(string: "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_osx.tar.gz")!) async throws {
+        let archiveURL: URL
+        let isLocal = url.isFileURL
+        if isLocal {
+            archiveURL = url
+        } else {
+            let (downloaded, response) = try await URLSession.shared.download(from: url)
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                throw WorkshopError.downloadFailed("HTTP \(httpResponse.statusCode)")
+            }
+            archiveURL = downloaded
+        }
+        defer {
+            if !isLocal {
+                try? FileManager.default.removeItem(at: archiveURL)
+            }
+        }
+
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+        process.arguments = ["-xzf", archiveURL.path, "-C", root.path]
+        try process.run()
+        process.waitUntilExit()
+
+        if FileManager.default.fileExists(atPath: script.path) {
+            try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: script.path)
+        }
+
+        guard process.terminationStatus == 0, isInstalled else {
+            throw WorkshopError.downloadFailed("Failed to extract SteamCMD")
+        }
+    }
+
     /// Opens Terminal so the user can type their password and Steam Guard code once.
     func openLoginTerminal(username: String) throws {
         guard isInstalled else { throw WorkshopError.steamCMDMissing }

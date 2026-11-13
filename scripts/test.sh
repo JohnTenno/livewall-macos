@@ -15,3 +15,4 @@ if [ -d "$CLT_FRAMEWORKS" ]; then
 else
     exec swift test "$@"
 fi
+

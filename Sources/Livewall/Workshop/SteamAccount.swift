@@ -17,18 +17,36 @@ final class SteamAccount: ObservableObject {
     }
 
     let steamCMD: SteamCMD
+    @Published private(set) var isInstalled: Bool
+    @Published private(set) var isInstalling: Bool = false
 
     init(defaults: UserDefaults = .standard, steamCMD: SteamCMD = SteamCMD()) {
         self.defaults = defaults
         self.steamCMD = steamCMD
         apiKey = keychain.read(account: Self.apiKeyAccount) ?? ""
         username = defaults.string(forKey: Self.usernameKey) ?? ""
+        isInstalled = steamCMD.isInstalled
     }
 
     @Published private(set) var loginMessage: String?
 
     var trimmedAPIKey: String { apiKey.trimmingCharacters(in: .whitespaces) }
     var trimmedUsername: String { username.trimmingCharacters(in: .whitespaces) }
+
+    func installSteamCMD() async {
+        isInstalling = true
+        loginMessage = nil
+        defer {
+            isInstalling = false
+            isInstalled = steamCMD.isInstalled
+        }
+        do {
+            try await steamCMD.install()
+            loginMessage = "SteamCMD installed successfully."
+        } catch {
+            loginMessage = error.localizedDescription
+        }
+    }
 
     func openLoginTerminal() {
         do {
