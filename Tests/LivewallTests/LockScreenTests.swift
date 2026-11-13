@@ -68,6 +68,21 @@ import Testing
     }
 }
 
+@Suite struct EncodedSampleCollectorTests {
+    @Test func ignoresNilSampleWhenStatusIsNoError() {
+        let collector = EncodedSampleCollector()
+        collector.receive(status: noErr, sample: nil)
+        #expect(collector.error == nil)
+        #expect(collector.samples.isEmpty)
+    }
+
+    @Test func recordsFirstErrorWhenStatusIsFailure() {
+        let collector = EncodedSampleCollector()
+        collector.receive(status: -1, sample: nil)
+        #expect(collector.error != nil)
+    }
+}
+
 
 @Suite struct AerialStoreTests {
     private let assetID = "F439B0A7-D18C-4B14-9681-6520E6A74FE9"
