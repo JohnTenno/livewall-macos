@@ -28,6 +28,8 @@ struct MenuBarContent: View {
 
         Divider()
 
+        UpdateMenuItem()
+
         Button("Quit Livewall") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
     }

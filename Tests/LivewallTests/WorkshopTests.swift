@@ -27,6 +27,25 @@ import Testing
         #expect(page.items.isEmpty)
     }
 
+    @Test func emptyLaterPageDoesNotTurnLoadedResultsIntoZeroTotal() throws {
+        let page = try WorkshopPage.decode(Data(#"{"response":{"total":0}}"#.utf8))
+        #expect(page.resolvedTotal(previous: 1_200_000, loadedCount: 120) == 1_200_000)
+        #expect(page.resolvedTotal(previous: nil, loadedCount: 120) == nil)
+        #expect(page.resolvedTotal(previous: nil, loadedCount: 0) == 0)
+    }
+
+    @Test func decodesStringTotalsAndKeepsUnknownTotalsUnknown() throws {
+        let stringTotal = try WorkshopPage.decode(Data(#"{"response":{"total":"1234","publishedfiledetails":[]}}"#.utf8))
+        #expect(stringTotal.total == 1234)
+        let unknown = try WorkshopPage.decode(Data(#"{"response":{"publishedfiledetails":[{"publishedfileid":"1","title":"Test"}],"next_cursor":"next"}}"#.utf8))
+        #expect(unknown.total == nil)
+        #expect(unknown.items.count == 1)
+        #expect(unknown.resolvedTotal(previous: nil, loadedCount: 30) == nil)
+        #expect(throws: DecodingError.self) {
+            try WorkshopPage.decode(Data(#"{"response":{"error":"Invalid request"}}"#.utf8))
+        }
+    }
+
     @Test func buildsQueryURL() throws {
         var query = WorkshopQuery()
         query.text = "  rain "
@@ -36,6 +55,7 @@ import Testing
         #expect(values["appid"] == "431960")
         #expect(values["query_type"] == "12")
         #expect(values["search_text"] == "rain")
+        #expect(values["return_previews"] == "true")
         #expect(values["requiredtags[0]"] == "Video")
         #expect(values["requiredtags[1]"] == "Web")
         #expect(values["excludedtags[0]"] == "Mature")
@@ -47,6 +67,14 @@ import Testing
         #expect(!names.contains("search_text"))
         #expect(!names.contains("requiredtags[1]"))
         #expect(!names.contains("excludedtags[0]"))
+    }
+
+    @Test func decodesAdditionalYouTubePreviewFromSteam() throws {
+        let json = #"{"publishedfileid":"2250845956","title":"Preview test","previews":[{"previewid":"20844236","sortorder":1,"youtubevideoid":"Zj0CO5K5qdQ","preview_type":1,"external_reference":""}]}"#
+        let item = try JSONDecoder().decode(WorkshopItem.self, from: Data(json.utf8))
+        #expect(item.youtubePreviewID == "Zj0CO5K5qdQ")
+        let invalid = #"{"publishedfileid":"1","previews":[{"preview_type":1,"youtubevideoid":"<script>bad</script>"}]}"#
+        #expect(try JSONDecoder().decode(WorkshopItem.self, from: Data(invalid.utf8)).youtubePreviewID == nil)
     }
 }
 

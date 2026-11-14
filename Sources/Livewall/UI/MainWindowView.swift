@@ -23,7 +23,7 @@ struct MainWindowView: View {
         }
         // Sidebar tabs get the system Liquid Glass sidebar, like System Settings.
         .tabViewStyle(.sidebarAdaptable)
-        .frame(minWidth: 760, minHeight: 520)
+        .frame(minWidth: 960, minHeight: 600)
         // Imports (file or Workshop) append to the library; offer the lock screen for each new video.
         .onChange(of: library.userWallpapers.count) { old, new in
             if new > old, let added = library.userWallpapers.last, added.kind == .video { lockScreen.offer = added }

@@ -16,4 +16,20 @@ final class SteamWorkshopClient {
         }
         return try WorkshopPage.decode(data)
     }
+
+    func previewDetails(itemID: String, apiKey: String) async throws -> WorkshopItem {
+        guard !apiKey.isEmpty else { throw WorkshopError.missingAPIKey }
+        var components = URLComponents(string: "https://api.steampowered.com/IPublishedFileService/GetDetails/v1/")!
+        components.queryItems = [
+            URLQueryItem(name: "key", value: apiKey),
+            URLQueryItem(name: "publishedfileids[0]", value: itemID),
+            URLQueryItem(name: "includeadditionalpreviews", value: "true"),
+            URLQueryItem(name: "short_description", value: "true"),
+            URLQueryItem(name: "strip_description_bbcode", value: "true"),
+        ]
+        let (data, response) = try await session.data(from: components.url!)
+        guard (response as? HTTPURLResponse)?.statusCode == 200,
+              let item = try WorkshopPage.decode(data).items.first else { throw URLError(.badServerResponse) }
+        return item
+    }
 }

@@ -9,6 +9,7 @@ struct LivewallApp: App {
             MenuBarContent()
                 .environmentObject(appDelegate.settings)
                 .environmentObject(appDelegate.library)
+                .environmentObject(appDelegate.updater)
         }
 
         Window("Livewall", id: MainWindowView.windowID) {
@@ -21,6 +22,6 @@ struct LivewallApp: App {
                 .environmentObject(appDelegate.workshop)
                 .environmentObject(appDelegate.desktopVariants)
         }
-        .defaultSize(width: 900, height: 640)
+        .defaultSize(width: 1160, height: 740)
     }
 }

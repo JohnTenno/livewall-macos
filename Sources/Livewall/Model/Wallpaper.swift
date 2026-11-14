@@ -8,6 +8,9 @@ struct Wallpaper: Identifiable, Codable, Hashable {
     var source: WallpaperSource
     /// Videos only; nil means the recommended optimized copy once it exists.
     var desktopQuality: DesktopVideoQuality? = nil
+    /// Optional provenance keeps Workshop previews linked to their downloaded library item.
+    var workshopID: String? = nil
+    var previewImageURL: URL? = nil
 
     var effectiveDesktopQuality: DesktopVideoQuality { desktopQuality ?? .optimized }
 

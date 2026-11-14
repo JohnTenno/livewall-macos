@@ -10,6 +10,9 @@ A lightweight Wallpaper Engine–style live wallpaper app for macOS, written in 
 - One click-through window per display at desktop level — below Finder icons, above the system wallpaper, on every Space.
 - Automatic pause when the desktop is fully covered, the screen sleeps or locks, Low Power Mode is on, or (optionally) on battery.
 - Menu bar app (no Dock icon) with a library window and launch-at-login.
+- Thumbnail cards in the library, with a right-hand live preview for videos, web wallpapers and shaders. Single-click to preview; use Apply or double-click to change the desktop.
+- Workshop details in the same side panel, with the author's animated GIF preview before downloading. Downloads stay in the library until applied, and downloaded items can be previewed live.
+- Workshop pagination with a fixed Previous/Next bar, page and result counts, and cached pages for instant backward navigation.
 - **Lock screen**: renders the current video or shader to a 4K HEVC loop and swaps it into the Aerial selected in System Settings (original kept as a backup, restorable).
 - **Steam Workshop**: searches Wallpaper Engine items through the Steam Web API and downloads video/web ones with SteamCMD using your own Steam session (requires owning Wallpaper Engine). Scene and application items are not supported.
 
@@ -33,6 +36,18 @@ Shaders cost more or less depending on the shader and the FPS setting.
 ./scripts/test.sh           # unit tests, including compiling the built-in shaders
 ./scripts/bundle-app.sh     # produces build/Livewall.app
 open build/Livewall.app
+```
+
+## Install and updates
+
+Download `Livewall.zip` from the latest [release](https://github.com/JohnTenno/livewall-macos/releases/latest),
+unzip it and move `Livewall.app` to Applications. The app is not notarized: the first time, right-click it and choose Open.
+Livewall checks GitHub for a newer release at launch and offers "Update to … and restart" in its menu bar menu.
+
+To publish a release (clean git tree, `gh` logged in):
+
+```sh
+./scripts/release.sh 0.2.0
 ```
 
 ## Shader contract

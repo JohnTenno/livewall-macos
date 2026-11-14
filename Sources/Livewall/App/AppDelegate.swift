@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var desktop = DesktopController(library: library, settings: settings)
     lazy var lockScreen = LockScreenModel(resolver: WallpaperAssetResolver(library: library))
     let steamAccount = SteamAccount()
+    let updater = AppUpdater()
     lazy var workshop = WorkshopModel(account: steamAccount, library: library, settings: settings)
     lazy var desktopVariants = DesktopVariantModel(library: library) { [weak self] id in
         // Switch the running wallpaper to its new copy as soon as it is ready.
@@ -17,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         desktop.start()
         desktopVariants.start()
+        Task { await updater.check() }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
