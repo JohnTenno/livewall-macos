@@ -20,7 +20,7 @@ struct MenuBarContent: View {
         Toggle("Pause", isOn: $settings.isPaused)
             .keyboardShortcut("p")
 
-        Button("Open library…") {
+        Button("Options…") {
             openWindow(id: MainWindowView.windowID)
             NSApp.activate()
         }
