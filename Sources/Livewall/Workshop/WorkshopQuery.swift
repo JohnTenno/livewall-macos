@@ -40,6 +40,8 @@ struct WorkshopQuery: Equatable {
             items.append(URLQueryItem(name: "excludedtags[\(index)]", value: tag))
         }
         components.queryItems = items
+        // URLComponents leaves "+" as is, and Steam reads it as a space: cursors like "AoII…H+An" would break paging.
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         return components.url!
     }
 }

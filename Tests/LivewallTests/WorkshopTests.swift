@@ -46,6 +46,15 @@ import Testing
         }
     }
 
+    @Test func encodesPlusSignsInCursorsAndText() {
+        var query = WorkshopQuery()
+        query.text = "c++"
+        let url = query.url(apiKey: "KEY", cursor: "AoIIQypE/H+Anq5h").absoluteString
+        #expect(url.contains("cursor=AoIIQypE/H%2BAnq5h"))
+        #expect(url.contains("search_text=c%2B%2B"))
+        #expect(!url.contains("+"))
+    }
+
     @Test func buildsQueryURL() throws {
         var query = WorkshopQuery()
         query.text = "  rain "
