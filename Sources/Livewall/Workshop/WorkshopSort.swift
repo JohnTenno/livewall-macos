@@ -6,6 +6,7 @@ enum WorkshopSort: Int, CaseIterable, Identifiable {
     case mostSubscribed = 9
     case newest = 1
     case topRated = 0
+    case lastUpdated = 21
 
     /// Used automatically whenever there is search text.
     static let textSearch = 12
@@ -14,10 +15,11 @@ enum WorkshopSort: Int, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .trending: String(localized: "Trending")
+        case .trending: String(localized: "Most popular")
         case .mostSubscribed: String(localized: "Most subscribed")
         case .newest: String(localized: "Newest")
         case .topRated: String(localized: "Top rated")
+        case .lastUpdated: String(localized: "Last updated")
         }
     }
 }

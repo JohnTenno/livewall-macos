@@ -11,6 +11,7 @@ struct WorkshopView: View {
 
     @State private var previewItem: WorkshopItem?
     @State private var showsPreview = true
+    @State private var showsFilters = false
 
     private let columns = [GridItem(.adaptive(minimum: 180, maximum: 260), spacing: 12)]
 
@@ -52,20 +53,22 @@ struct WorkshopView: View {
                 .frame(minWidth: 300, maxWidth: .infinity, maxHeight: .infinity)
 
                 if showsPreview {
-                    if let item = previewItem {
-                        WorkshopInspector(item: item, onClose: { showsPreview = false })
-                            .id(item.id)
-                            .frame(minWidth: 280, idealWidth: 320, maxWidth: 380)
-                    } else {
-                        VStack(spacing: 0) {
-                            InspectorHeader(title: "Workshop preview", onClose: { showsPreview = false })
-                            ContentUnavailableView("Select a wallpaper", systemImage: "play.rectangle",
-                                description: Text("Choose a card to see its preview and details."))
-                                .frame(maxHeight: .infinity)
+                    // One stable split-view pane: swapping the pane itself on every selection rebuilt the grid and lost its scroll.
+                    ZStack {
+                        if let item = previewItem {
+                            WorkshopInspector(item: item, onClose: { showsPreview = false })
+                                .id(item.id)
+                        } else {
+                            VStack(spacing: 0) {
+                                InspectorHeader(title: "Workshop preview", onClose: { showsPreview = false })
+                                ContentUnavailableView("Select a wallpaper", systemImage: "play.rectangle",
+                                    description: Text("Choose a card to see its preview and details."))
+                                    .frame(maxHeight: .infinity)
+                            }
+                            .background(.background.secondary)
                         }
-                        .background(.background.secondary)
-                        .frame(minWidth: 280, idealWidth: 320, maxWidth: 380)
                     }
+                    .frame(minWidth: 280, idealWidth: 320, maxWidth: 380)
                 }
             }
         }
@@ -86,19 +89,26 @@ struct WorkshopView: View {
             TextField("Search the Workshop", text: $workshop.query.text)
                 .textFieldStyle(.roundedBorder)
                 .onSubmit { search() }
-            Picker("Type", selection: $workshop.query.type) {
-                Text("Video and web").tag(WorkshopItemType?.none)
-                ForEach(WorkshopItemType.allCases.filter(\.isSupported)) { type in
-                    Text(type.displayName).tag(Optional(type))
-                }
-            }
-            .fixedSize()
             Picker("Sort", selection: $workshop.query.sort) {
                 ForEach(WorkshopSort.allCases) { Text($0.displayName).tag($0) }
             }
             .fixedSize()
-            Toggle("+18", isOn: $workshop.query.includeMature)
-                .help("Include items marked as mature content")
+            if workshop.query.sort == .trending && workshop.query.text.trimmingCharacters(in: .whitespaces).isEmpty {
+                Picker("Period", selection: $workshop.query.period) {
+                    ForEach(WorkshopPeriod.allCases) { Text($0.displayName).tag($0) }
+                }
+                .fixedSize()
+            }
+            Button {
+                showsFilters.toggle()
+            } label: {
+                let count = workshop.query.filters.activeCount
+                Label(count == 0 ? "Filters" : "Filters (\(count))", systemImage: "line.3.horizontal.decrease.circle")
+            }
+            .labelStyle(.titleAndIcon)
+            .popover(isPresented: $showsFilters, arrowEdge: .bottom) {
+                WorkshopFiltersView(filters: $workshop.query.filters)
+            }
             Button("Search", systemImage: "magnifyingglass") { search() }
                 .keyboardShortcut(.defaultAction)
                 .buttonStyle(.glassProminent)
@@ -107,9 +117,9 @@ struct WorkshopView: View {
         .padding(10)
         .glassEffect(in: .rect(cornerRadius: 16))
         .padding([.horizontal, .top], 10)
-        .onChange(of: workshop.query.type) { search() }
         .onChange(of: workshop.query.sort) { search() }
-        .onChange(of: workshop.query.includeMature) { search() }
+        .onChange(of: workshop.query.period) { search() }
+        .onChange(of: workshop.query.filters) { search() }
     }
 
     private var results: some View {
