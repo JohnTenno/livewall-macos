@@ -78,47 +78,6 @@ import Testing
     }
 }
 
-@Suite struct SteamCMDTests {
-    @Test func parsesSuccessfulDownload() throws {
-        let output = """
-        Logging in user 'me' to Steam Public...OK
-        Downloading item 123 ...
-        Success. Downloaded item 123 to "/Users/me/Library/Application Support/Steam/steamapps/workshop/content/431960/123" (1048576 bytes)
-        """
-        let folder = try SteamCMD.parseDownloadOutput(output, itemID: "123")
-        #expect(folder.path == "/Users/me/Library/Application Support/Steam/steamapps/workshop/content/431960/123")
-    }
-
-    @Test func detectsMissingSession() {
-        let output = "Logging in user 'me' to Steam Public...\nCached credentials not found.\nFAILED (No Connection)"
-        #expect(throws: WorkshopError.self) { try SteamCMD.parseDownloadOutput(output, itemID: "123") }
-    }
-
-    @Test func installsFromArchive() async throws {
-        let tmp = FileManager.default.temporaryDirectory.appending(path: "steamcmd-test-\(UUID())")
-        let srcDir = tmp.appending(path: "src")
-        let destDir = tmp.appending(path: "dest")
-        let archiveURL = tmp.appending(path: "test.tar.gz")
-        defer { try? FileManager.default.removeItem(at: tmp) }
-
-        try FileManager.default.createDirectory(at: srcDir, withIntermediateDirectories: true)
-        let dummyScript = srcDir.appending(path: "steamcmd.sh")
-        try "#!/bin/sh\nexit 0\n".write(to: dummyScript, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: dummyScript.path)
-
-        let tar = Process()
-        tar.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
-        tar.arguments = ["-czf", archiveURL.path, "-C", srcDir.path, "steamcmd.sh"]
-        try tar.run()
-        tar.waitUntilExit()
-
-        let steamCMD = SteamCMD(root: destDir)
-        #expect(!steamCMD.isInstalled)
-        try await steamCMD.install(from: archiveURL)
-        #expect(steamCMD.isInstalled)
-    }
-}
-
 @MainActor
 @Suite struct WorkshopImporterTests {
     private func makeItem(_ project: String, files: [String: String]) throws -> URL {

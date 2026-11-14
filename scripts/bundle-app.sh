@@ -26,13 +26,12 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>26.0</string>
   <key>LSUIElement</key><true/>
   <key>NSHighResolutionCapable</key><true/>
-  <key>NSAppleEventsUsageDescription</key><string>Opens Terminal so you can log in to SteamCMD.</string>
 </dict>
 </plist>
 PLIST
 if [ -n "$SIGN_IDENTITY" ]; then
     # Developer ID + hardened runtime: what notarization requires.
-    codesign --force --options runtime --timestamp --entitlements scripts/Livewall.entitlements --sign "$SIGN_IDENTITY" "$APP"
+    codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP"
 else
     codesign --force --sign - "$APP"
 fi

@@ -80,10 +80,6 @@
 "Already sized for your display; no lighter copy needed." = "Ya tiene el tamaño de tu pantalla; no hace falta una copia más ligera.";
 
 /* Workshop */
-"After logging in, press “Download and apply” again." = "Después de iniciar sesión, vuelve a presionar “Descargar y aplicar”.";
-"Log in to SteamCMD…" = "Iniciar sesión en SteamCMD…";
-"API key missing" = "Falta la clave de API";
-"Add it in the Settings → Steam tab." = "Agrégala en Ajustes → Steam.";
 "Search wallpapers" = "Busca fondos";
 "Only video and web wallpapers are shown, the ones Livewall can play." = "Solo se muestran fondos de video y web, los que Livewall puede reproducir.";
 "Workshop preview" = "Vista previa del Workshop";
@@ -181,14 +177,15 @@
 "Pixel coordinates with the origin at the bottom left, like Shadertoy." = "Coordenadas en píxeles con el origen abajo a la izquierda, como en Shadertoy.";
 "Steam" = "Steam";
 "API key" = "Clave de API";
-"Steam username (login)" = "Usuario de Steam (inicio de sesión)";
-"Install SteamCMD" = "Instalar SteamCMD";
-"Installing SteamCMD…" = "Instalando SteamCMD…";
-"Get API key" = "Obtener clave de API";
-"The API key is stored in the Keychain. Livewall never sees your password: SteamCMD keeps the session." = "La clave de API se guarda en el Llavero. Livewall nunca ve tu contraseña: SteamCMD guarda la sesión.";
-"SteamCMD is required to download Workshop items. Click Install SteamCMD to set it up." = "Se necesita SteamCMD para descargar elementos del Workshop. Haz clic en Instalar SteamCMD para configurarlo.";
-"SteamCMD installed successfully." = "SteamCMD se instaló correctamente.";
-"Type your password and Steam Guard code in Terminal. It closes by itself when done." = "Escribe tu contraseña y el código de Steam Guard en Terminal. Se cierra sola al terminar.";
+"Install the Steam downloader" = "Instalar el descargador de Steam";
+"Installing the Steam downloader…" = "Instalando el descargador de Steam…";
+"Signed in as %@" = "Sesión iniciada como %@";
+"Sign out" = "Cerrar sesión";
+"Sign in with Steam…" = "Iniciar sesión con Steam…";
+"Sign in with Steam" = "Iniciar sesión con Steam";
+"Connecting to Steam…" = "Conectando con Steam…";
+"Open the Steam app on your phone, tap the shield (Steam Guard) and scan this code." = "Abre la app de Steam en tu celular, toca el escudo (Steam Guard) y escanea este código.";
+"Steam sign-in QR code" = "Código QR para iniciar sesión en Steam";
 
 /* Errors */
 "Choose an Aerial wallpaper in System Settings → Wallpaper." = "Elige un fondo Aerial en Ajustes del Sistema → Fondo de pantalla.";
@@ -205,14 +202,27 @@
 "The shader does not compile:\n%@" = "El shader no compila:\n%@";
 "Could not optimize the video: %@" = "No se pudo optimizar el video: %@";
 "Enter your Steam API key in Settings → Steam." = "Escribe tu clave de API de Steam en Ajustes → Steam.";
-"Enter your Steam username in Settings → Steam." = "Escribe tu usuario de Steam en Ajustes → Steam.";
 "Steam rejected the API key. Check it in Settings → Steam." = "Steam rechazó la clave de API. Revísala en Ajustes → Steam.";
 "Steam responded with HTTP error %lld." = "Steam respondió con el error HTTP %lld.";
-"SteamCMD is not installed." = "SteamCMD no está instalado.";
-"SteamCMD has no saved session. Use “Log in to SteamCMD” in Settings → Steam." = "SteamCMD no tiene una sesión guardada. Usa “Iniciar sesión en SteamCMD” en Ajustes → Steam.";
 "Download failed: %@" = "Falló la descarga: %@";
+"The Steam downloader is not installed. Install it in Settings → Steam." = "El descargador de Steam no está instalado. Instálalo en Ajustes → Steam.";
+"Sign in with Steam to download. Scan the QR code in Settings → Steam." = "Inicia sesión con Steam para descargar. Escanea el código QR en Ajustes → Steam.";
 "Livewall cannot play “%@” wallpapers." = "Livewall no puede reproducir fondos de tipo “%@”.";
 "GitHub answered with status %lld." = "GitHub respondió con el estado %lld.";
 "The latest release has no Livewall.zip attached." = "La última versión no trae Livewall.zip adjunto.";
 "Could not unpack the downloaded update." = "No se pudo descomprimir la actualización descargada.";
 "The downloaded file is not Livewall." = "El archivo descargado no es Livewall.";
+
+/* Steam setup: two steps */
+"Step 1 · Search the Workshop" = "Paso 1 · Buscar en el Workshop";
+"Step 2 · Download wallpapers" = "Paso 2 · Descargar fondos";
+"Get a free key" = "Obtener una clave gratis";
+"Ready to search" = "Listo para buscar";
+"Needed to search the Workshop" = "Necesaria para buscar en el Workshop";
+"Steam only uses this key to list wallpapers; it cannot download anything. It is stored in the Keychain." = "Steam solo usa esta clave para mostrar la lista de fondos; con ella no se puede descargar nada. Se guarda en el Llavero.";
+"Downloads use your Steam account, which must own Wallpaper Engine. Scan a QR code with the Steam app once; Livewall never sees your password." = "Las descargas usan tu cuenta de Steam, que debe tener Wallpaper Engine. Escanea un código QR con la app de Steam una sola vez; Livewall nunca ve tu contraseña.";
+"First install DepotDownloader (about 80 MB, open source, from GitHub). It downloads Workshop items with your Steam account." = "Primero instala DepotDownloader (unos 80 MB, de código abierto, desde GitHub). Descarga elementos del Workshop con tu cuenta de Steam.";
+"Add a Steam API key to search" = "Agrega una clave de API de Steam para buscar";
+"Searching the Workshop needs a free Steam Web API key. Downloading is a separate step: signing in with the Steam app." = "Para buscar en el Workshop se necesita una clave gratuita de la API de Steam. Descargar es otro paso aparte: iniciar sesión con la app de Steam.";
+"Open Steam settings" = "Abrir ajustes de Steam";
+"Downloading needs your Steam account. Sign in by scanning a QR code, then press Download again." = "Para descargar se necesita tu cuenta de Steam. Inicia sesión escaneando un código QR y vuelve a presionar Descargar.";

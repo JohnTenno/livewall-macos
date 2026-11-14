@@ -9,7 +9,7 @@ final class WorkshopModel: ObservableObject {
     @Published private(set) var error: String?
     @Published private(set) var downloading: Set<String> = []
     @Published private(set) var imported: Set<String> = []
-    /// True after a download failed because SteamCMD has no cached Steam session.
+    /// True after a download failed because there is no Steam session; the Workshop tab then offers to sign in.
     @Published private(set) var needsLogin = false
 
     private let client = SteamWorkshopClient()
@@ -104,21 +104,21 @@ final class WorkshopModel: ObservableObject {
         }
         downloading.insert(item.id)
         error = nil
-        let steamCMD = account.steamCMD
-        let username = account.trimmedUsername
+        let downloader = account.downloader
+        let accountName = account.accountName ?? ""
 
         Task {
             defer { downloading.remove(item.id) }
             do {
-                let folder = try await steamCMD.download(
-                    itemID: item.id, appID: WorkshopQuery.wallpaperEngineAppID, username: username
-                )
+                let folder = try await downloader.download(itemID: item.id, account: accountName)
+                defer { try? FileManager.default.removeItem(at: folder) }
                 let importedWallpaper = try importer.importItem(at: folder, fallbackTitle: item.title)
                 let wallpaper = library.setWorkshopSource(id: item.id, previewURL: item.previewURL, for: importedWallpaper)
                 needsLogin = false
                 imported.insert(item.id)
                 if apply { settings.selectedWallpaperID = wallpaper.id }
             } catch WorkshopError.notLoggedIn {
+                account.sessionExpired()
                 needsLogin = true
                 self.error = WorkshopError.notLoggedIn.localizedDescription
             } catch {

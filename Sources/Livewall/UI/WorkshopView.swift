@@ -2,6 +2,9 @@ import SwiftUI
 
 /// Browses the Wallpaper Engine Workshop and downloads video/web items into the library.
 struct WorkshopView: View {
+    /// Sends the user to Settings, where the Steam API key and sign-in live.
+    let openSettings: () -> Void
+
     @EnvironmentObject private var workshop: WorkshopModel
     @EnvironmentObject private var account: SteamAccount
     @EnvironmentObject private var library: WallpaperLibrary
@@ -21,10 +24,10 @@ struct WorkshopView: View {
 
             if workshop.needsLogin {
                 HStack {
-                    Text("After logging in, press “Download and apply” again.")
+                    Text("Downloading needs your Steam account. Sign in by scanning a QR code, then press Download again.")
                         .font(.callout)
                     Spacer()
-                    Button("Log in to SteamCMD…") { account.openLoginTerminal() }
+                    Button("Sign in with Steam…") { account.signIn() }
                 }
                 .padding(10)
             }
@@ -32,8 +35,13 @@ struct WorkshopView: View {
             HSplitView {
                 Group {
                     if account.trimmedAPIKey.isEmpty {
-                        ContentUnavailableView("API key missing", systemImage: "key",
-                                               description: Text("Add it in the Settings → Steam tab."))
+                        ContentUnavailableView {
+                            Label("Add a Steam API key to search", systemImage: "key")
+                        } description: {
+                            Text("Searching the Workshop needs a free Steam Web API key. Downloading is a separate step: signing in with the Steam app.")
+                        } actions: {
+                            Button("Open Steam settings") { openSettings() }
+                        }
                     } else if workshop.items.isEmpty && !workshop.isLoading {
                         ContentUnavailableView("Search wallpapers", systemImage: "magnifyingglass",
                                                description: Text("Only video and web wallpapers are shown, the ones Livewall can play."))

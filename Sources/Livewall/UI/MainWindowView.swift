@@ -5,19 +5,21 @@ struct MainWindowView: View {
 
     @EnvironmentObject private var library: WallpaperLibrary
     @EnvironmentObject private var lockScreen: LockScreenModel
+    @EnvironmentObject private var steamAccount: SteamAccount
+    @State private var tab = MainTab.library
 
     var body: some View {
-        TabView {
-            Tab("Library", systemImage: "square.grid.2x2") {
+        TabView(selection: $tab) {
+            Tab("Library", systemImage: "square.grid.2x2", value: .library) {
                 LibraryView()
             }
-            Tab("Workshop", systemImage: "cloud") {
-                WorkshopView()
+            Tab("Workshop", systemImage: "cloud", value: .workshop) {
+                WorkshopView(openSettings: { tab = .settings })
             }
-            Tab("Lock Screen", systemImage: "lock.display") {
+            Tab("Lock Screen", systemImage: "lock.display", value: .lockScreen) {
                 LockScreenView()
             }
-            Tab("Settings", systemImage: "gearshape") {
+            Tab("Settings", systemImage: "gearshape", value: .settings) {
                 SettingsView()
             }
         }
@@ -27,6 +29,9 @@ struct MainWindowView: View {
         // Imports (file or Workshop) append to the library; offer the lock screen for each new video.
         .onChange(of: library.userWallpapers.count) { old, new in
             if new > old, let added = library.userWallpapers.last, added.kind == .video { lockScreen.offer = added }
+        }
+        .sheet(isPresented: Binding(get: { steamAccount.isSigningIn }, set: { if !$0 { steamAccount.cancelSignIn() } })) {
+            SteamSignInSheet().environmentObject(steamAccount)
         }
         .alert("Also use it on the lock screen?", isPresented: Binding(
             get: { lockScreen.offer != nil }, set: { if !$0 { lockScreen.offer = nil } }
