@@ -9,7 +9,7 @@ A lightweight Wallpaper Engine–style live wallpaper app for macOS, written in 
 - **Metal shader** wallpapers with time, resolution and live mouse position (no Accessibility permission needed).
 - One click-through window per display at desktop level — below Finder icons, above the system wallpaper, on every Space.
 - Automatic pause when the desktop is fully covered, the screen sleeps or locks, Low Power Mode is on, or (optionally) on battery.
-- Menu bar app (no Dock icon) with a library window and launch-at-login.
+- Menu bar app (no Dock icon): Pause, Options… (opens the library window), Check for updates and Quit. Launch-at-login.
 - Thumbnail cards in the library, with a right-hand live preview for videos, web wallpapers and shaders. Single-click to preview; use Apply or double-click to change the desktop.
 - Workshop details in the same side panel, with the author's animated GIF preview before downloading. Downloads stay in the library until applied, and downloaded items can be previewed live.
 - Workshop pagination with a fixed Previous/Next bar, page and result counts, and cached pages for instant backward navigation.
@@ -42,7 +42,7 @@ open build/Livewall.app
 
 Download `Livewall.zip` from the latest [release](https://github.com/JohnTenno/livewall-macos/releases/latest),
 unzip it and move `Livewall.app` to Applications. The app is not notarized: the first time, right-click it and choose Open.
-Livewall checks GitHub for a newer release at launch and offers "Update to … and restart" in its menu bar menu.
+Livewall checks GitHub for a newer release at launch (or when you choose Check for updates in the menu bar) and offers "Update to … and restart".
 
 To publish a release (clean git tree, `gh` logged in):
 
@@ -106,4 +106,5 @@ Web items get a small shim for Wallpaper Engine's JS API (`wallpaperRegisterAudi
 | `Desktop/` | Desktop windows per display, playback policy, `DesktopController` |
 | `LockScreen/` | Aerial replacement, shader-to-video recorder, transcoder |
 | `Workshop/` | Steam Web API client, SteamCMD wrapper, Wallpaper Engine project import |
+| `Update/` | GitHub release check and self-update (`AppUpdater`) |
 | `UI/` | SwiftUI menu bar, library and settings |
