@@ -14,7 +14,7 @@ struct SteamSettingsSection: View {
         } header: {
             Text("Step 1 · Search the Workshop")
         } footer: {
-            Text("Steam only uses this key to list wallpapers; it cannot download anything. It is stored in the Keychain.")
+            Text("Steam only uses this key to list wallpapers; it cannot download anything.")
         }
 
         Section {

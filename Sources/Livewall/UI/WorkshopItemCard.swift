@@ -8,6 +8,7 @@ struct WorkshopItemCard: View {
     let onSelect: () -> Void
     let onDownload: () -> Void
     @FocusState private var focused: Bool
+    @State private var thumbnail: NSImage?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -19,28 +20,42 @@ struct WorkshopItemCard: View {
                         .aspectRatio(1, contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .overlay {
-                            AsyncImage(url: item.previewURL) { image in
-                                image.resizable().aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                Image(systemName: "photo").foregroundStyle(.secondary)
+                            if let thumbnail {
+                                Image(nsImage: thumbnail)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } else {
+                                Image(systemName: "photo")
+                                    .foregroundStyle(.secondary)
                             }
-                            .allowsHitTesting(false)
                         }
                         .clipped()
                         .contentShape(Rectangle())
 
                     VStack(alignment: .leading, spacing: 6) {
-                        if let type = item.type {
-                            Text(type.displayName)
-                                .font(.caption).foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            if let type = item.type {
+                                Text(type.displayName)
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
+                            if let resolution = item.resolution {
+                                Text(resolution)
+                                    .font(.caption2.weight(.semibold))
+                                    .padding(.horizontal, 6).padding(.vertical, 2)
+                                    .background(.blue.opacity(0.15), in: Capsule())
+                            }
                         }
                         Text(item.title)
                             .font(.headline)
                             .lineLimit(2).frame(height: 36, alignment: .topLeading)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .help(item.title)
-                        Text(ByteCountFormatter.string(fromByteCount: Int64(clamping: item.fileSize), countStyle: .file))
-                            .font(.caption).foregroundStyle(.secondary)
+                        HStack(spacing: 4) {
+                            Text(ByteCountFormatter.string(fromByteCount: Int64(clamping: item.fileSize), countStyle: .file))
+                                .font(.caption).foregroundStyle(.secondary)
+                            Text("· \(item.subscriptions.formatted()) subs")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
                     }
                     .padding(.horizontal, 10)
                 }
@@ -66,6 +81,17 @@ struct WorkshopItemCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay {
             RoundedRectangle(cornerRadius: 12).strokeBorder(isSelected || focused ? Color.accentColor : .clear, lineWidth: 2)
+        }
+        .task(id: item.previewURL) {
+            if let url = item.previewURL, let cached = WorkshopThumbnails.shared.cachedImage(for: url) {
+                thumbnail = cached
+                return
+            }
+            thumbnail = nil
+            let image = await WorkshopThumbnails.shared.image(for: item.previewURL)
+            if !Task.isCancelled {
+                thumbnail = image
+            }
         }
     }
 

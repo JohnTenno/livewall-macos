@@ -114,7 +114,7 @@ conversion because those versions did not retain the processed file.
 
 ## Steam Workshop
 
-1. Create a Web API key at https://steamcommunity.com/dev/apikey and paste it in Settings → Steam (stored in the Keychain).
+1. Create a Web API key at https://steamcommunity.com/dev/apikey and paste it in Settings → Steam (saved in ~/Library/Application Support/Livewall/steam-api-key).
 2. Press "Install the Steam downloader" (DepotDownloader 3.4.0, ~80 MB from its GitHub release), then "Sign in with Steam" and scan the QR code with the Steam mobile app (Steam Guard → QR). Livewall never sees your password.
 3. DepotDownloader and its saved session live in `~/Library/Application Support/Livewall/depotdownloader/`; "Sign out" deletes the session.
 

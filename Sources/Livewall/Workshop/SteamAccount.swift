@@ -1,17 +1,16 @@
 import Foundation
 
-/// The user's Steam setup: the Web API key (Keychain) for searching, and a QR sign-in for downloading.
+/// The user's Steam setup: the Web API key (Application Support) for searching, and a QR sign-in for downloading.
 @MainActor
 final class SteamAccount: ObservableObject {
     private static let accountNameKey = "steamAccountName"
-    private static let apiKeyAccount = "steam-web-api-key"
     private static let legacyKeys = ["steamUsername"]
 
-    private let keychain = KeychainStore(service: "com.tenno.livewall")
+    private let keyStore: SteamAPIKeyStore
     private let defaults: UserDefaults
 
     @Published var apiKey: String {
-        didSet { keychain.write(apiKey.trimmingCharacters(in: .whitespaces), account: Self.apiKeyAccount) }
+        didSet { keyStore.write(apiKey.trimmingCharacters(in: .whitespaces)) }
     }
     /// Set once the Steam app approved a QR code; DepotDownloader logs in with it and its saved token.
     @Published private(set) var accountName: String? {
@@ -27,10 +26,15 @@ final class SteamAccount: ObservableObject {
     @Published private(set) var message: String?
     private var signInTask: Task<Void, Never>?
 
-    init(defaults: UserDefaults = .standard, downloader: DepotDownloader = DepotDownloader()) {
+    init(
+        defaults: UserDefaults = .standard,
+        downloader: DepotDownloader = DepotDownloader(),
+        keyStore: SteamAPIKeyStore = SteamAPIKeyStore()
+    ) {
         self.defaults = defaults
         self.downloader = downloader
-        apiKey = keychain.read(account: Self.apiKeyAccount) ?? ""
+        self.keyStore = keyStore
+        apiKey = keyStore.read() ?? ""
         accountName = defaults.string(forKey: Self.accountNameKey)
         isInstalled = downloader.isInstalled
         Self.legacyKeys.forEach(defaults.removeObject(forKey:))

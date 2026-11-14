@@ -38,7 +38,13 @@ struct WorkshopInspector: View {
 
                     VStack(spacing: 8) {
                         LabeledContent("Type", value: item.type?.displayName ?? String(localized: "Unknown"))
+                        if let resolution = item.resolution {
+                            LabeledContent("Resolution", value: resolution)
+                        }
                         LabeledContent("Size", value: ByteCountFormatter.string(fromByteCount: Int64(clamping: item.fileSize), countStyle: .file))
+                        if item.subscriptions > 0 {
+                            LabeledContent("Subscriptions", value: item.subscriptions.formatted())
+                        }
                     }
                     .font(.callout)
 
