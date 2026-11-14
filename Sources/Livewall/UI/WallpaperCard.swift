@@ -60,7 +60,7 @@ struct WallpaperCard: View {
         }
         .buttonStyle(.plain)
         .focused($focused)
-        .accessibilityLabel(wallpaper.name + ", " + wallpaper.kind.displayName + (isActive ? ", active" : ""))
+        .accessibilityLabel(isActive ? String(localized: "\(wallpaper.name), \(wallpaper.kind.displayName), active") : "\(wallpaper.name), \(wallpaper.kind.displayName)")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityIdentifier("wallpaper.card." + wallpaper.id.uuidString)
         .help("Click to preview; double-click to apply")

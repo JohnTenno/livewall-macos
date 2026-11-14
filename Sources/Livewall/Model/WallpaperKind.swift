@@ -26,9 +26,9 @@ enum WallpaperKind: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .video: "Video"
-        case .web: "Web"
-        case .shader: "Shader"
+        case .video: String(localized: "Video")
+        case .web: String(localized: "Web")
+        case .shader: String(localized: "Shader")
         }
     }
 

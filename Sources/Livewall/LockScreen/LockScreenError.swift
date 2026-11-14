@@ -11,17 +11,17 @@ enum LockScreenError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noAerialSelected:
-            "Choose an Aerial wallpaper in System Settings → Wallpaper."
+            String(localized: "Choose an Aerial wallpaper in System Settings → Wallpaper.")
         case .aerialNotDownloaded(let name):
-            "The Aerial “\(name)” is not downloaded yet. Wait for it to finish in System Settings."
+            String(localized: "The Aerial “\(name)” is not downloaded yet. Wait for it to finish in System Settings.")
         case .unsupportedKind(let kind):
-            "\(kind.displayName) wallpapers cannot be used on the lock screen. Use a video or a shader."
+            String(localized: "\(kind.displayName) wallpapers cannot be used on the lock screen. Use a video or a shader.")
         case .noVideoTrack:
-            "The file has no video track."
+            String(localized: "The file has no video track.")
         case .encodingFailed(let reason):
-            "Could not render the video: \(reason)"
+            String(localized: "Could not render the video: \(reason)")
         case .noBackup:
-            "There is no backup of the original Aerial."
+            String(localized: "There is no backup of the original Aerial.")
         }
     }
 }

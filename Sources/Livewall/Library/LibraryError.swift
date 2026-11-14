@@ -7,9 +7,9 @@ enum LibraryError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .unsupportedFile(let ext): "Unsupported format: .\(ext). Use .mp4, .mov, .html, .metal or a folder with index.html."
-        case .missingIndex: "The folder has no index.html."
-        case .invalidURL: "Invalid address. It must start with http:// or https://."
+        case .unsupportedFile(let ext): String(localized: "Unsupported format: .\(ext). Use .mp4, .mov, .html, .metal or a folder with index.html.")
+        case .missingIndex: String(localized: "The folder has no index.html.")
+        case .invalidURL: String(localized: "Invalid address. It must start with http:// or https://.")
         }
     }
 }

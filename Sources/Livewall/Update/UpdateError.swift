@@ -8,10 +8,10 @@ enum UpdateError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .badResponse(let status): "GitHub answered with status \(status)."
-        case .noArchive: "The latest release has no Livewall.zip attached."
-        case .unzipFailed: "Could not unpack the downloaded update."
-        case .wrongBundle: "The downloaded file is not Livewall."
+        case .badResponse(let status): String(localized: "GitHub answered with status \(status).")
+        case .noArchive: String(localized: "The latest release has no Livewall.zip attached.")
+        case .unzipFailed: String(localized: "Could not unpack the downloaded update.")
+        case .wrongBundle: String(localized: "The downloaded file is not Livewall.")
         }
     }
 }

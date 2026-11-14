@@ -37,7 +37,7 @@ struct WorkshopInspector: View {
                     Text(item.title).font(.title2.weight(.semibold)).textSelection(.enabled)
 
                     VStack(spacing: 8) {
-                        LabeledContent("Type", value: item.type?.displayName ?? "Unknown")
+                        LabeledContent("Type", value: item.type?.displayName ?? String(localized: "Unknown"))
                         LabeledContent("Size", value: ByteCountFormatter.string(fromByteCount: Int64(clamping: item.fileSize), countStyle: .file))
                     }
                     .font(.callout)

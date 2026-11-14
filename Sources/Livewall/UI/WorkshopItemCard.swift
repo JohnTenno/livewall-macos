@@ -48,7 +48,7 @@ struct WorkshopItemCard: View {
             }
             .buttonStyle(.plain)
             .focused($focused)
-            .accessibilityLabel("Preview " + item.title)
+            .accessibilityLabel(String(localized: "Preview \(item.title)"))
             .accessibilityAddTraits(isSelected ? .isSelected : [])
             .accessibilityIdentifier("workshop.card." + item.id)
 

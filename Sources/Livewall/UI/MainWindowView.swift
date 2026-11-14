@@ -41,11 +41,9 @@ struct MainWindowView: View {
 
     private var lockScreenOfferMessage: String {
         guard lockScreen.aerial != nil else {
-            return "First choose an Aerial in System Settings → Wallpaper; then use the Lock Screen tab."
+            return String(localized: "First choose an Aerial in System Settings → Wallpaper; then use the Lock Screen tab.")
         }
-        if lockScreen.isWorking { return "Another lock screen conversion is running; use the Lock Screen tab when it finishes." }
-        return "Recommended: the lock screen uses the original file at full quality, and macOS plays it in slow motion "
-            + "when you lock and unlock, so high-quality 4K 60 fps videos look best. Converting takes a few minutes; "
-            + "the desktop keeps using the lighter copy."
+        if lockScreen.isWorking { return String(localized: "Another lock screen conversion is running; use the Lock Screen tab when it finishes.") }
+        return String(localized: "Recommended: the lock screen uses the original file at full quality, and macOS plays it in slow motion when you lock and unlock, so high-quality 4K 60 fps videos look best. Converting takes a few minutes; the desktop keeps using the lighter copy.")
     }
 }

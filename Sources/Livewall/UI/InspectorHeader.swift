@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct InspectorHeader: View {
-    let title: String
+    let title: LocalizedStringKey
     let onClose: () -> Void
 
     var body: some View {

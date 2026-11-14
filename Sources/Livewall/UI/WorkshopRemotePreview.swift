@@ -24,7 +24,7 @@ final class WorkshopPreviewImageLoader: ObservableObject {
         error = nil
         frameCount = 0
         guard let url, ["https", "http"].contains(url.scheme?.lowercased() ?? "") else {
-            error = "The author has not provided a preview image."
+            error = String(localized: "The author has not provided a preview image.")
             return
         }
         isLoading = true

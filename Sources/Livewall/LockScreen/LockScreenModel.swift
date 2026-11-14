@@ -93,7 +93,7 @@ final class LockScreenModel: ObservableObject {
 
         isWorking = true
         progress = nil
-        status = "Checking saved lock screen video…"
+        status = String(localized: "Checking saved lock screen video…")
         error = nil
 
         let store = store, cache = cache, spec = spec, appliedState = appliedState
@@ -108,7 +108,7 @@ final class LockScreenModel: ObservableObject {
                     let key = LockScreenExportCache.key(source: try fingerprint(), minimumDuration: original.seconds, spec: spec)
                     let reused = cache.movie(wallpaperID: wallpaper.id, key: key) != nil
                     await MainActor.run {
-                        self.status = reused ? "Reusing saved lock screen video…" : "Rendering 4K 240 fps video of “\(wallpaper.name)”…"
+                        self.status = reused ? String(localized: "Reusing saved lock screen video…") : String(localized: "Rendering 4K 240 fps video of “\(wallpaper.name)”…")
                         self.progress = reused ? nil : 0
                     }
                     let encoded = try await cache.resolve(wallpaperID: wallpaper.id, key: key) { destination in
@@ -126,7 +126,7 @@ final class LockScreenModel: ObservableObject {
                     try store.install(encoded, for: aerial)
                     try appliedState.record(wallpaperID: wallpaper.id, sourceRevision: revision, aerial: aerial)
                 }.value
-                status = "Done. Lock the screen (⌃⌘Q) to see it."
+                status = String(localized: "Done. Lock the screen (⌃⌘Q) to see it.")
             } catch {
                 fail(error)
             }
@@ -144,7 +144,7 @@ final class LockScreenModel: ObservableObject {
         do {
             try store.restore(aerial)
             appliedState.clear(aerial)
-            status = "Restored the original Aerial “\(aerial.name)”."
+            status = String(localized: "Restored the original Aerial “\(aerial.name)”.")
             error = nil
         } catch {
             fail(error)

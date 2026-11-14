@@ -65,8 +65,8 @@ struct WallpaperInspector: View {
 
     private var sourceLabel: String {
         switch wallpaper.source {
-        case .builtInShader: "Built-in wallpaper"
-        case .libraryFile: "In your library"
+        case .builtInShader: String(localized: "Built-in wallpaper")
+        case .libraryFile: String(localized: "In your library")
         case .remote(let url): url.absoluteString
         }
     }

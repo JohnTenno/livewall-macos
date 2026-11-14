@@ -42,7 +42,7 @@ final class SteamAccount: ObservableObject {
         }
         do {
             try await steamCMD.install()
-            loginMessage = "SteamCMD installed successfully."
+            loginMessage = String(localized: "SteamCMD installed successfully.")
         } catch {
             loginMessage = error.localizedDescription
         }
@@ -52,7 +52,7 @@ final class SteamAccount: ObservableObject {
         do {
             guard !trimmedUsername.isEmpty else { throw WorkshopError.missingUsername }
             try steamCMD.openLoginTerminal(username: trimmedUsername)
-            loginMessage = "Type your password and Steam Guard code in Terminal. It closes by itself when done."
+            loginMessage = String(localized: "Type your password and Steam Guard code in Terminal. It closes by itself when done.")
         } catch {
             loginMessage = error.localizedDescription
         }

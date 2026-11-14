@@ -104,7 +104,7 @@ struct LibraryView: View {
         }
     }
 
-    private func gallery(_ title: String, wallpapers: [Wallpaper]) -> some View {
+    private func gallery(_ title: LocalizedStringKey, wallpapers: [Wallpaper]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(title).font(.headline)

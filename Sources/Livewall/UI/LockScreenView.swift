@@ -14,7 +14,7 @@ struct LockScreenView: View {
             Section("Aerial being replaced") {
                 if let aerial = lockScreen.aerial {
                     LabeledContent("Aerial", value: aerial.name)
-                    LabeledContent("Status", value: aerial.isDownloaded ? (lockScreen.hasBackup ? "Using Livewall video" : "Apple original") : "Not downloaded")
+                    LabeledContent("Status", value: aerial.isDownloaded ? (lockScreen.hasBackup ? String(localized: "Using Livewall video") : String(localized: "Apple original")) : String(localized: "Not downloaded"))
                 } else {
                     Text("Choose an Aerial wallpaper in System Settings → Wallpaper, then come back here.")
                         .foregroundStyle(.secondary)

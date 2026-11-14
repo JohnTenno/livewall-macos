@@ -80,8 +80,8 @@ struct SettingsView: View {
     /// Explains why the frame rate setting may not change anything for the active wallpaper.
     private var frameRateNote: String? {
         switch settings.selectedWallpaperID.flatMap(library.wallpaper(id:))?.kind {
-        case .video: "Your active wallpaper is a video, so this setting does not change it. To make a video lighter, choose “Battery saver (30 fps)” under it in the Library."
-        case .web: "Your active wallpaper is a web page; the page itself decides its frame rate."
+        case .video: String(localized: "Your active wallpaper is a video, so this setting does not change it. To make a video lighter, choose “Battery saver (30 fps)” under it in the Library.")
+        case .web: String(localized: "Your active wallpaper is a web page; the page itself decides its frame rate.")
         case .shader, nil: nil
         }
     }
