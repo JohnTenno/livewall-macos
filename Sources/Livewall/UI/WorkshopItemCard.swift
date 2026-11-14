@@ -2,86 +2,98 @@ import SwiftUI
 
 struct WorkshopItemCard: View {
     let item: WorkshopItem
+    let isSelected: Bool
     let isDownloading: Bool
     let isImported: Bool
-    var onSelect: (() -> Void)? = nil
+    let onSelect: () -> Void
     let onDownload: () -> Void
+    @FocusState private var focused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // A fill-scaled image overflows its frame, and clipping does not clip hit testing:
-            // without allowsHitTesting(false) it swallows clicks on the buttons of the card above.
-            Rectangle()
-                .fill(.quaternary)
-                .frame(height: 110)
-                .frame(maxWidth: .infinity)
-                .overlay {
-                    AsyncImage(url: item.previewURL) { image in
-                        image.resizable().aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Color.clear
+        VStack(alignment: .leading, spacing: 0) {
+            Button(action: onSelect) {
+                VStack(alignment: .leading, spacing: 8) {
+                    // Image overflow must not intercept neighboring cards' controls.
+                    Rectangle()
+                        .fill(.quaternary)
+                        .aspectRatio(1, contentMode: .fit)
+                        .frame(maxWidth: .infinity)
+                        .overlay {
+                            AsyncImage(url: item.previewURL) { image in
+                                image.resizable().aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Image(systemName: "photo").foregroundStyle(.secondary)
+                            }
+                            .allowsHitTesting(false)
+                        }
+                        .clipped()
+                        .contentShape(Rectangle())
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 6) {
+                            if let type = item.type {
+                                Text(type.displayName)
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
+                            if let resolution = item.resolution {
+                                Text(resolution)
+                                    .font(.caption2.weight(.semibold))
+                                    .padding(.horizontal, 6).padding(.vertical, 2)
+                                    .background(.blue.opacity(0.15), in: Capsule())
+                            }
+                        }
+                        Text(item.title)
+                            .font(.headline)
+                            .lineLimit(2).frame(height: 36, alignment: .topLeading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .help(item.title)
+                        HStack(spacing: 4) {
+                            Text(ByteCountFormatter.string(fromByteCount: Int64(clamping: item.fileSize), countStyle: .file))
+                                .font(.caption).foregroundStyle(.secondary)
+                            Text("· \(item.subscriptions.formatted()) subs")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
                     }
-                    .allowsHitTesting(false)
+                    .padding(.horizontal, 10)
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .contentShape(RoundedRectangle(cornerRadius: 8))
-
-            Text(item.title)
-                .font(.headline)
-                .lineLimit(1)
-                .help(item.title)
-
-            HStack(spacing: 6) {
-                if let type = item.type {
-                    Text(type.displayName)
-                        .font(.caption2.weight(.semibold))
-                        .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(.tint.opacity(0.15), in: Capsule())
-                }
-                if let resolution = item.resolution {
-                    Text(resolution)
-                        .font(.caption2.weight(.semibold))
-                        .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(.blue.opacity(0.15), in: Capsule())
-                }
-                Text(ByteCountFormatter.string(fromByteCount: Int64(item.fileSize), countStyle: .file))
-                Text("· \(item.subscriptions.formatted()) subs")
+                .contentShape(Rectangle())
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .lineLimit(1)
+            .buttonStyle(.plain)
+            .focused($focused)
+            .accessibilityLabel(String(localized: "Preview \(item.title)"))
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
+            .accessibilityIdentifier("workshop.card." + item.id)
 
             HStack {
                 actionButton
                 Spacer()
                 Link(destination: item.pageURL) {
-                    Image(systemName: "arrow.up.right.square")
+                    Image(systemName: "arrow.up.right.square").frame(width: 44, height: 44)
                 }
                 .help("Open in Steam")
             }
+            .padding(.horizontal, 10)
         }
-        .padding(8)
-        .contentShape(RoundedRectangle(cornerRadius: 12))
-        .onTapGesture {
-            onSelect?()
+        .background(.background.secondary)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12).strokeBorder(isSelected || focused ? Color.accentColor : .clear, lineWidth: 2)
         }
-        // Solid on purpose: one glass layer per card in a scrolling grid costs WindowServer GPU time.
-        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 12))
     }
 
     @ViewBuilder
     private var actionButton: some View {
         if isImported {
-            Label("In library", systemImage: "checkmark.circle.fill").foregroundStyle(.green).font(.callout)
+            Label("In library", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(.green)
         } else if isDownloading {
             HStack(spacing: 6) {
                 ProgressView().controlSize(.small)
                 Text("Downloading…").font(.callout)
             }
         } else if item.type?.isSupported ?? false {
-            Button("Download and apply", action: onDownload)
+            Button("Download", action: onDownload)
                 .buttonStyle(.glass)
-                .help("Download with SteamCMD, add it to your library and set it as wallpaper")
+                .help("Download to your library without changing the desktop")
         } else {
             Text("Not supported").font(.callout).foregroundStyle(.secondary)
         }

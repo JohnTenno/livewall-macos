@@ -14,10 +14,10 @@ enum WorkshopItemType: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .video: "Video"
-        case .web: "Web"
-        case .scene: "Scene"
-        case .application: "Application"
+        case .video: String(localized: "Video")
+        case .web: String(localized: "Web")
+        case .scene: String(localized: "Scene")
+        case .application: String(localized: "Application")
         }
     }
 

@@ -10,17 +10,17 @@ enum DesktopVideoQuality: String, Codable, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .original: "Original file"
-        case .optimized: "Optimized for this display"
-        case .batterySaver: "Battery saver (30 fps)"
+        case .original: String(localized: "Original file")
+        case .optimized: String(localized: "Optimized for this display")
+        case .batterySaver: String(localized: "Battery saver (30 fps)")
         }
     }
 
     var detail: String {
         switch self {
-        case .original: "Plays the imported file as is. Larger-than-screen videos use more memory for no visible gain."
-        case .optimized: "Resized to your display at the original frame rate. Looks the same and uses less memory."
-        case .batterySaver: "Resized and capped at 30 fps. About half the CPU and GPU; motion is slightly less smooth."
+        case .original: String(localized: "Plays the imported file as is. Larger-than-screen videos use more memory for no visible gain.")
+        case .optimized: String(localized: "Resized to your display at the original frame rate. Looks the same and uses less memory.")
+        case .batterySaver: String(localized: "Resized and capped at 30 fps. About half the CPU and GPU; motion is slightly less smooth.")
         }
     }
 }

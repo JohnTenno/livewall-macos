@@ -14,10 +14,10 @@ enum WorkshopSort: Int, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .trending: "Trending"
-        case .mostSubscribed: "Most subscribed"
-        case .newest: "Newest"
-        case .topRated: "Top rated"
+        case .trending: String(localized: "Trending")
+        case .mostSubscribed: String(localized: "Most subscribed")
+        case .newest: String(localized: "Newest")
+        case .topRated: String(localized: "Top rated")
         }
     }
 }

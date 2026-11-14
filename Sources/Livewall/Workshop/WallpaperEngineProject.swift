@@ -7,6 +7,7 @@ struct WallpaperEngineProject: Decodable {
     let title: String?
     let type: String?
     let file: String?
+    let preview: String?
     let general: General?
 
     struct General: Decodable {

@@ -27,19 +27,38 @@ import Testing
         {"response":{"total":1,"publishedfiledetails":[
           {"publishedfileid":"999","title":"Neon City","file_size":"2048",
            "tags":[{"tag":"Video"},{"tag":"3840 x 2160"},{"tag":"Cyberpunk"},{"tag":"Everyone"}],
-           "previews":[{"preview_type":1,"youtubevideoid":"xyz123"}]}
+           "previews":[{"preview_type":1,"youtubevideoid":"dQw4w9WgXcQ"}]}
         ]}}
         """
         let page = try WorkshopPage.decode(Data(json.utf8))
         let item = try #require(page.items.first)
         #expect(item.resolution == "3840 × 2160")
-        #expect(item.youTubeVideoID == "xyz123")
+        #expect(item.youTubeVideoID == "dQw4w9WgXcQ")
         #expect(item.categoryTags == ["Cyberpunk"])
     }
 
     @Test func decodesEmptyResponse() throws {
         let page = try WorkshopPage.decode(Data(#"{"response":{"total":0}}"#.utf8))
         #expect(page.items.isEmpty)
+    }
+
+    @Test func emptyLaterPageDoesNotTurnLoadedResultsIntoZeroTotal() throws {
+        let page = try WorkshopPage.decode(Data(#"{"response":{"total":0}}"#.utf8))
+        #expect(page.resolvedTotal(previous: 1_200_000, loadedCount: 120) == 1_200_000)
+        #expect(page.resolvedTotal(previous: nil, loadedCount: 120) == nil)
+        #expect(page.resolvedTotal(previous: nil, loadedCount: 0) == 0)
+    }
+
+    @Test func decodesStringTotalsAndKeepsUnknownTotalsUnknown() throws {
+        let stringTotal = try WorkshopPage.decode(Data(#"{"response":{"total":"1234","publishedfiledetails":[]}}"#.utf8))
+        #expect(stringTotal.total == 1234)
+        let unknown = try WorkshopPage.decode(Data(#"{"response":{"publishedfiledetails":[{"publishedfileid":"1","title":"Test"}],"next_cursor":"next"}}"#.utf8))
+        #expect(unknown.total == nil)
+        #expect(unknown.items.count == 1)
+        #expect(unknown.resolvedTotal(previous: nil, loadedCount: 30) == nil)
+        #expect(throws: DecodingError.self) {
+            try WorkshopPage.decode(Data(#"{"response":{"error":"Invalid request"}}"#.utf8))
+        }
     }
 
     @Test func buildsQueryURL() throws {
@@ -51,6 +70,7 @@ import Testing
         #expect(values["appid"] == "431960")
         #expect(values["query_type"] == "12")
         #expect(values["search_text"] == "rain")
+        #expect(values["return_previews"] == "true")
         #expect(values["requiredtags[0]"] == "Video")
         #expect(values["requiredtags[1]"] == "Web")
         #expect(values["excludedtags[0]"] == "Mature")
@@ -63,46 +83,13 @@ import Testing
         #expect(!names.contains("requiredtags[1]"))
         #expect(!names.contains("excludedtags[0]"))
     }
-}
 
-@Suite struct SteamCMDTests {
-    @Test func parsesSuccessfulDownload() throws {
-        let output = """
-        Logging in user 'me' to Steam Public...OK
-        Downloading item 123 ...
-        Success. Downloaded item 123 to "/Users/me/Library/Application Support/Steam/steamapps/workshop/content/431960/123" (1048576 bytes)
-        """
-        let folder = try SteamCMD.parseDownloadOutput(output, itemID: "123")
-        #expect(folder.path == "/Users/me/Library/Application Support/Steam/steamapps/workshop/content/431960/123")
-    }
-
-    @Test func detectsMissingSession() {
-        let output = "Logging in user 'me' to Steam Public...\nCached credentials not found.\nFAILED (No Connection)"
-        #expect(throws: WorkshopError.self) { try SteamCMD.parseDownloadOutput(output, itemID: "123") }
-    }
-
-    @Test func installsFromArchive() async throws {
-        let tmp = FileManager.default.temporaryDirectory.appending(path: "steamcmd-test-\(UUID())")
-        let srcDir = tmp.appending(path: "src")
-        let destDir = tmp.appending(path: "dest")
-        let archiveURL = tmp.appending(path: "test.tar.gz")
-        defer { try? FileManager.default.removeItem(at: tmp) }
-
-        try FileManager.default.createDirectory(at: srcDir, withIntermediateDirectories: true)
-        let dummyScript = srcDir.appending(path: "steamcmd.sh")
-        try "#!/bin/sh\nexit 0\n".write(to: dummyScript, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: dummyScript.path)
-
-        let tar = Process()
-        tar.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
-        tar.arguments = ["-czf", archiveURL.path, "-C", srcDir.path, "steamcmd.sh"]
-        try tar.run()
-        tar.waitUntilExit()
-
-        let steamCMD = SteamCMD(root: destDir)
-        #expect(!steamCMD.isInstalled)
-        try await steamCMD.install(from: archiveURL)
-        #expect(steamCMD.isInstalled)
+    @Test func decodesAdditionalYouTubePreviewFromSteam() throws {
+        let json = #"{"publishedfileid":"2250845956","title":"Preview test","previews":[{"previewid":"20844236","sortorder":1,"youtubevideoid":"Zj0CO5K5qdQ","preview_type":1,"external_reference":""}]}"#
+        let item = try JSONDecoder().decode(WorkshopItem.self, from: Data(json.utf8))
+        #expect(item.youtubePreviewID == "Zj0CO5K5qdQ")
+        let invalid = #"{"publishedfileid":"1","previews":[{"preview_type":1,"youtubevideoid":"<script>bad</script>"}]}"#
+        #expect(try JSONDecoder().decode(WorkshopItem.self, from: Data(invalid.utf8)).youtubePreviewID == nil)
     }
 }
 

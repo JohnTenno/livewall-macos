@@ -82,16 +82,19 @@ final class WallpaperLibrary: ObservableObject {
         return add(Wallpaper(id: UUID(), name: title.isEmpty ? url.host ?? address : title, kind: .web, source: .remote(url)))
     }
 
-    func rename(_ wallpaper: Wallpaper, to name: String) {
-        guard let index = userWallpapers.firstIndex(where: { $0.id == wallpaper.id }) else { return }
-        userWallpapers[index].name = name
-        save()
-    }
-
     func setDesktopQuality(_ quality: DesktopVideoQuality, for wallpaper: Wallpaper) {
         guard let index = userWallpapers.firstIndex(where: { $0.id == wallpaper.id }) else { return }
         userWallpapers[index].desktopQuality = quality
         save()
+    }
+
+    @discardableResult
+    func setWorkshopSource(id: String, previewURL: URL?, for wallpaper: Wallpaper) -> Wallpaper {
+        guard let index = userWallpapers.firstIndex(where: { $0.id == wallpaper.id }) else { return wallpaper }
+        userWallpapers[index].workshopID = id
+        userWallpapers[index].previewImageURL = previewURL
+        save()
+        return userWallpapers[index]
     }
 
     func remove(_ wallpaper: Wallpaper) {

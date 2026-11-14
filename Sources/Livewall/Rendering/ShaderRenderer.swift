@@ -80,8 +80,8 @@ final class ShaderRenderer: NSObject, WallpaperRenderer, MTKViewDelegate {
     /// The window ignores mouse events, so the cursor is polled globally; no Accessibility permission needed.
     private func mousePosition(in view: MTKView) -> SIMD2<Float> {
         guard let window = view.window else { return .zero }
-        let location = NSEvent.mouseLocation
+        let location = view.convert(window.convertPoint(fromScreen: NSEvent.mouseLocation), from: nil)
         let scale = window.backingScaleFactor
-        return SIMD2(Float((location.x - window.frame.minX) * scale), Float((location.y - window.frame.minY) * scale))
+        return SIMD2(Float(location.x * scale), Float(location.y * scale))
     }
 }

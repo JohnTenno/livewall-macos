@@ -9,9 +9,13 @@ A lightweight Wallpaper Engine–style live wallpaper app for macOS, written in 
 - **Metal shader** wallpapers with time, resolution and live mouse position (no Accessibility permission needed).
 - One click-through window per display at desktop level — below Finder icons, above the system wallpaper, on every Space.
 - Automatic pause when the desktop is fully covered, the screen sleeps or locks, Low Power Mode is on, or (optionally) on battery.
-- Menu bar app (no Dock icon) with a library window and launch-at-login.
+- Menu bar app (no Dock icon): Pause, Options… (opens the library window), Check for updates and Quit. Launch-at-login.
+- English and Spanish UI, following the macOS language (translations in `Localization/`).
+- Thumbnail cards in the library, with a right-hand live preview for videos, web wallpapers and shaders. Single-click to preview; use Apply or double-click to change the desktop.
+- Workshop details in the same side panel, with the author's animated GIF preview before downloading. Downloads stay in the library until applied, and downloaded items can be previewed live.
+- Workshop pagination with a fixed Previous/Next bar, page and result counts, and cached pages for instant backward navigation.
 - **Lock screen**: renders the current video or shader to a 4K HEVC loop and swaps it into the Aerial selected in System Settings (original kept as a backup, restorable).
-- **Steam Workshop**: searches Wallpaper Engine items through the Steam Web API and downloads video/web ones with SteamCMD using your own Steam session (requires owning Wallpaper Engine). Scene and application items are not supported.
+- **Steam Workshop**: searches Wallpaper Engine items through the Steam Web API and downloads video/web ones with [DepotDownloader](https://github.com/SteamRE/DepotDownloader) after a one-time QR sign-in with the Steam app (requires owning Wallpaper Engine). Scene and application items are not supported.
 
 ## Resource usage
 
@@ -34,6 +38,42 @@ Shaders cost more or less depending on the shader and the FPS setting.
 ./scripts/bundle-app.sh     # produces build/Livewall.app
 open build/Livewall.app
 ```
+
+## Install and updates
+
+The easiest way: paste this in Terminal. It installs the latest release in Applications and opens it, with no security warning
+(files downloaded by `curl` are not flagged by macOS). Run it again any time to reinstall.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/JohnTenno/livewall-macos/main/scripts/install.sh | sh
+```
+
+Or manually: download `Livewall.zip` from the latest [release](https://github.com/JohnTenno/livewall-macos/releases/latest),
+unzip it and move `Livewall.app` to Applications.
+
+The app is not notarized yet, so the first launch shows "Apple could not verify Livewall is free of malware".
+To open it, either:
+
+- open it once, close the warning, then go to **System Settings → Privacy & Security** and click **Open Anyway**; or
+- before the first launch, remove the download flag in Terminal:
+
+  ```sh
+  xattr -dr com.apple.quarantine /Applications/Livewall.app
+  ```
+
+This is only needed once: in-app updates do not trigger the warning again.
+
+Livewall checks GitHub for a newer release at launch (or when you choose Check for updates in the menu bar) and offers "Update to … and restart".
+
+To publish a release (clean git tree, `gh` logged in):
+
+```sh
+./scripts/release.sh 0.2.0
+```
+
+With a paid Apple Developer account, set `SIGN_IDENTITY` (Developer ID) and `NOTARY_PROFILE` (a `notarytool` keychain
+profile) to sign and notarize the release; the warning above then becomes the normal "downloaded from the internet" prompt.
+See the header of `scripts/release.sh`.
 
 ## Shader contract
 
@@ -75,8 +115,8 @@ conversion because those versions did not retain the processed file.
 ## Steam Workshop
 
 1. Create a Web API key at https://steamcommunity.com/dev/apikey and paste it in Settings → Steam (stored in the Keychain).
-2. Enter your Steam login name and press "Log in to SteamCMD": Terminal opens so you type your password and Steam Guard code; Livewall never sees them.
-3. SteamCMD lives in `~/Library/Application Support/Livewall/steamcmd/`.
+2. Press "Install the Steam downloader" (DepotDownloader 3.4.0, ~80 MB from its GitHub release), then "Sign in with Steam" and scan the QR code with the Steam mobile app (Steam Guard → QR). Livewall never sees your password.
+3. DepotDownloader and its saved session live in `~/Library/Application Support/Livewall/depotdownloader/`; "Sign out" deletes the session.
 
 Web items get a small shim for Wallpaper Engine's JS API (`wallpaperRegisterAudioListener` stubs and default `applyUserProperties`).
 
@@ -90,5 +130,6 @@ Web items get a small shim for Wallpaper Engine's JS API (`wallpaperRegisterAudi
 | `Rendering/` | `WallpaperRenderer` protocol, video/web/shader renderers, `RendererFactory` |
 | `Desktop/` | Desktop windows per display, playback policy, `DesktopController` |
 | `LockScreen/` | Aerial replacement, shader-to-video recorder, transcoder |
-| `Workshop/` | Steam Web API client, SteamCMD wrapper, Wallpaper Engine project import |
+| `Workshop/` | Steam Web API client, DepotDownloader wrapper (QR sign-in), Wallpaper Engine project import |
+| `Update/` | GitHub release check and self-update (`AppUpdater`) |
 | `UI/` | SwiftUI menu bar, library and settings |
