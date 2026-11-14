@@ -30,7 +30,7 @@ Shaders cost more or less depending on the shader and the FPS setting.
 ## Build
 
 ```sh
-swift test                  # unit tests, including compiling the built-in shaders
+./scripts/test.sh           # unit tests, including compiling the built-in shaders
 ./scripts/bundle-app.sh     # produces build/Livewall.app
 open build/Livewall.app
 ```
