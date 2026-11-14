@@ -8,6 +8,7 @@ struct WorkshopItemCard: View {
     let onSelect: () -> Void
     let onDownload: () -> Void
     @FocusState private var focused: Bool
+    @State private var thumbnail: NSImage?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -19,12 +20,14 @@ struct WorkshopItemCard: View {
                         .aspectRatio(1, contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .overlay {
-                            AsyncImage(url: item.previewURL) { image in
-                                image.resizable().aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                Image(systemName: "photo").foregroundStyle(.secondary)
+                            if let thumbnail {
+                                Image(nsImage: thumbnail)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } else {
+                                Image(systemName: "photo")
+                                    .foregroundStyle(.secondary)
                             }
-                            .allowsHitTesting(false)
                         }
                         .clipped()
                         .contentShape(Rectangle())
@@ -78,6 +81,13 @@ struct WorkshopItemCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay {
             RoundedRectangle(cornerRadius: 12).strokeBorder(isSelected || focused ? Color.accentColor : .clear, lineWidth: 2)
+        }
+        .task(id: item.previewURL) {
+            thumbnail = nil
+            let image = await WorkshopThumbnails.shared.image(for: item.previewURL)
+            if !Task.isCancelled {
+                thumbnail = image
+            }
         }
     }
 
