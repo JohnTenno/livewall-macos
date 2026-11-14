@@ -41,8 +41,28 @@ open build/Livewall.app
 
 ## Install and updates
 
-Download `Livewall.zip` from the latest [release](https://github.com/JohnTenno/livewall-macos/releases/latest),
-unzip it and move `Livewall.app` to Applications. The app is not notarized: the first time, right-click it and choose Open.
+The easiest way: paste this in Terminal. It installs the latest release in Applications and opens it, with no security warning
+(files downloaded by `curl` are not flagged by macOS). Run it again any time to reinstall.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/JohnTenno/livewall-macos/main/scripts/install.sh | sh
+```
+
+Or manually: download `Livewall.zip` from the latest [release](https://github.com/JohnTenno/livewall-macos/releases/latest),
+unzip it and move `Livewall.app` to Applications.
+
+The app is not notarized yet, so the first launch shows "Apple could not verify Livewall is free of malware".
+To open it, either:
+
+- open it once, close the warning, then go to **System Settings → Privacy & Security** and click **Open Anyway**; or
+- before the first launch, remove the download flag in Terminal:
+
+  ```sh
+  xattr -dr com.apple.quarantine /Applications/Livewall.app
+  ```
+
+This is only needed once: in-app updates do not trigger the warning again.
+
 Livewall checks GitHub for a newer release at launch (or when you choose Check for updates in the menu bar) and offers "Update to … and restart".
 
 To publish a release (clean git tree, `gh` logged in):
@@ -50,6 +70,10 @@ To publish a release (clean git tree, `gh` logged in):
 ```sh
 ./scripts/release.sh 0.2.0
 ```
+
+With a paid Apple Developer account, set `SIGN_IDENTITY` (Developer ID) and `NOTARY_PROFILE` (a `notarytool` keychain
+profile) to sign and notarize the release; the warning above then becomes the normal "downloaded from the internet" prompt.
+See the header of `scripts/release.sh`.
 
 ## Shader contract
 

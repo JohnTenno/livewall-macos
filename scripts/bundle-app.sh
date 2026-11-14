@@ -1,5 +1,6 @@
 #!/bin/sh
-# Builds a release binary and wraps it in build/Livewall.app (ad-hoc signed).
+# Builds a release binary and wraps it in build/Livewall.app.
+# Signs ad-hoc, or with Developer ID when SIGN_IDENTITY is set (e.g. "Developer ID Application: Name (TEAMID)").
 set -e
 cd "$(dirname "$0")/.."
 swift build -c release
@@ -29,5 +30,10 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </dict>
 </plist>
 PLIST
-codesign --force --sign - "$APP"
+if [ -n "$SIGN_IDENTITY" ]; then
+    # Developer ID + hardened runtime: what notarization requires.
+    codesign --force --options runtime --timestamp --entitlements scripts/Livewall.entitlements --sign "$SIGN_IDENTITY" "$APP"
+else
+    codesign --force --sign - "$APP"
+fi
 echo "Done: $APP"
