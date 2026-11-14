@@ -4,6 +4,7 @@ struct WorkshopItemCard: View {
     let item: WorkshopItem
     let isDownloading: Bool
     let isImported: Bool
+    var onSelect: (() -> Void)? = nil
     let onDownload: () -> Void
 
     var body: some View {
@@ -37,6 +38,12 @@ struct WorkshopItemCard: View {
                         .padding(.horizontal, 6).padding(.vertical, 2)
                         .background(.tint.opacity(0.15), in: Capsule())
                 }
+                if let resolution = item.resolution {
+                    Text(resolution)
+                        .font(.caption2.weight(.semibold))
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(.blue.opacity(0.15), in: Capsule())
+                }
                 Text(ByteCountFormatter.string(fromByteCount: Int64(item.fileSize), countStyle: .file))
                 Text("· \(item.subscriptions.formatted()) subs")
             }
@@ -54,6 +61,10 @@ struct WorkshopItemCard: View {
             }
         }
         .padding(8)
+        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .onTapGesture {
+            onSelect?()
+        }
         // Solid on purpose: one glass layer per card in a scrolling grid costs WindowServer GPU time.
         .background(.background.secondary, in: RoundedRectangle(cornerRadius: 12))
     }

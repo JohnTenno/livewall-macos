@@ -33,6 +33,7 @@ struct WorkshopQuery: Equatable {
             URLQueryItem(name: "numperpage", value: String(pageSize)),
             URLQueryItem(name: "return_tags", value: "true"),
             URLQueryItem(name: "return_short_description", value: "true"),
+            URLQueryItem(name: "return_previews", value: "true"),
             // A single type must match; several types are alternatives.
             URLQueryItem(name: "match_all_tags", value: "false"),
         ]

@@ -22,6 +22,21 @@ import Testing
         #expect(page.items[1].type?.isSupported == false)
     }
 
+    @Test func decodesResolutionAndYouTubePreview() throws {
+        let json = """
+        {"response":{"total":1,"publishedfiledetails":[
+          {"publishedfileid":"999","title":"Neon City","file_size":"2048",
+           "tags":[{"tag":"Video"},{"tag":"3840 x 2160"},{"tag":"Cyberpunk"},{"tag":"Everyone"}],
+           "previews":[{"preview_type":1,"youtubevideoid":"xyz123"}]}
+        ]}}
+        """
+        let page = try WorkshopPage.decode(Data(json.utf8))
+        let item = try #require(page.items.first)
+        #expect(item.resolution == "3840 × 2160")
+        #expect(item.youTubeVideoID == "xyz123")
+        #expect(item.categoryTags == ["Cyberpunk"])
+    }
+
     @Test func decodesEmptyResponse() throws {
         let page = try WorkshopPage.decode(Data(#"{"response":{"total":0}}"#.utf8))
         #expect(page.items.isEmpty)
