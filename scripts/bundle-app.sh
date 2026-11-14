@@ -3,6 +3,8 @@
 # Signs ad-hoc, or with Developer ID when SIGN_IDENTITY is set (e.g. "Developer ID Application: Name (TEAMID)").
 set -e
 cd "$(dirname "$0")/.."
+DEFAULT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.3.2")
+VERSION="${VERSION:-$DEFAULT_VERSION}"
 swift build -c release
 APP="build/Livewall.app"
 rm -rf "$APP"

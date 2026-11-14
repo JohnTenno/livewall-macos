@@ -83,6 +83,10 @@ struct WorkshopItemCard: View {
             RoundedRectangle(cornerRadius: 12).strokeBorder(isSelected || focused ? Color.accentColor : .clear, lineWidth: 2)
         }
         .task(id: item.previewURL) {
+            if let url = item.previewURL, let cached = WorkshopThumbnails.shared.cachedImage(for: url) {
+                thumbnail = cached
+                return
+            }
             thumbnail = nil
             let image = await WorkshopThumbnails.shared.image(for: item.previewURL)
             if !Task.isCancelled {

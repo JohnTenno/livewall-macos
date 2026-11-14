@@ -12,7 +12,15 @@ final class WorkshopThumbnails {
     private var pending: [URL: Task<NSImage?, Never>] = [:]
     private let session: URLSession
 
-    init(session: URLSession = .shared, countLimit: Int = 90, totalCostLimit: Int = 25 * 1024 * 1024) {
+    nonisolated private static let defaultSession: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.httpMaximumConnectionsPerHost = 16
+        configuration.timeoutIntervalForRequest = 10
+        configuration.requestCachePolicy = .returnCacheDataElseLoad
+        return URLSession(configuration: configuration)
+    }()
+
+    init(session: URLSession = WorkshopThumbnails.defaultSession, countLimit: Int = 90, totalCostLimit: Int = 25 * 1024 * 1024) {
         self.session = session
         self.countLimit = countLimit
         cache.countLimit = countLimit
@@ -33,24 +41,24 @@ final class WorkshopThumbnails {
             task = existing
         } else {
             let session = self.session
-            task = Task.detached(priority: .utility) {
+            task = Task.detached(priority: .userInitiated) {
                 guard let (data, response) = try? await session.data(from: url),
                       (response as? HTTPURLResponse)?.statusCode == 200 else {
                     return nil
                 }
                 guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
-                    return nil
+                    return NSImage(data: data)
                 }
                 let options: [CFString: Any] = [
                     kCGImageSourceCreateThumbnailFromImageAlways: true,
                     kCGImageSourceShouldCacheImmediately: true,
                     kCGImageSourceCreateThumbnailWithTransform: true,
-                    kCGImageSourceThumbnailMaxPixelSize: 480
+                    kCGImageSourceThumbnailMaxPixelSize: 360
                 ]
-                guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
-                    return NSImage(data: data)
+                if let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) {
+                    return NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
                 }
-                return NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
+                return NSImage(data: data)
             }
             pending[url] = task
         }
