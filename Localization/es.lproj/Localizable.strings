@@ -221,7 +221,7 @@
 "Get a free key" = "Obtener una clave gratis";
 "Ready to search" = "Listo para buscar";
 "Needed to search the Workshop" = "Necesaria para buscar en el Workshop";
-"Steam only uses this key to list wallpapers; it cannot download anything. It is stored in the Keychain." = "Steam solo usa esta clave para mostrar la lista de fondos; con ella no se puede descargar nada. Se guarda en el Llavero.";
+"Steam only uses this key to list wallpapers; it cannot download anything." = "Steam solo usa esta clave para mostrar la lista de fondos; con ella no se puede descargar nada.";
 "Downloads use your Steam account, which must own Wallpaper Engine. Scan a QR code with the Steam app once; Livewall never sees your password." = "Las descargas usan tu cuenta de Steam, que debe tener Wallpaper Engine. Escanea un código QR con la app de Steam una sola vez; Livewall nunca ve tu contraseña.";
 "First install DepotDownloader (about 80 MB, open source, from GitHub). It downloads Workshop items with your Steam account." = "Primero instala DepotDownloader (unos 80 MB, de código abierto, desde GitHub). Descarga elementos del Workshop con tu cuenta de Steam.";
 "Add a Steam API key to search" = "Agrega una clave de API de Steam para buscar";
