@@ -10,6 +10,7 @@ A lightweight Wallpaper Engine–style live wallpaper app for macOS, written in 
 - One click-through window per display at desktop level — below Finder icons, above the system wallpaper, on every Space.
 - Automatic pause when the desktop is fully covered, the screen sleeps or locks, Low Power Mode is on, or (optionally) on battery.
 - Menu bar app (no Dock icon): Pause, Options… (opens the library window), Check for updates and Quit. Launch-at-login.
+- English and Spanish UI, following the macOS language (translations in `Localization/`).
 - Thumbnail cards in the library, with a right-hand live preview for videos, web wallpapers and shaders. Single-click to preview; use Apply or double-click to change the desktop.
 - Workshop details in the same side panel, with the author's animated GIF preview before downloading. Downloads stay in the library until applied, and downloaded items can be previewed live.
 - Workshop pagination with a fixed Previous/Next bar, page and result counts, and cached pages for instant backward navigation.
