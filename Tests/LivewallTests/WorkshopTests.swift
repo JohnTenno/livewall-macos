@@ -61,6 +61,15 @@ import Testing
         }
     }
 
+    @Test func encodesPlusSignsInCursorsAndText() {
+        var query = WorkshopQuery()
+        query.text = "c++"
+        let url = query.url(apiKey: "KEY", cursor: "AoIIQypE/H+Anq5h").absoluteString
+        #expect(url.contains("cursor=AoIIQypE/H%2BAnq5h"))
+        #expect(url.contains("search_text=c%2B%2B"))
+        #expect(!url.contains("+"))
+    }
+
     @Test func buildsQueryURL() throws {
         var query = WorkshopQuery()
         query.text = "  rain "
@@ -71,17 +80,27 @@ import Testing
         #expect(values["query_type"] == "12")
         #expect(values["search_text"] == "rain")
         #expect(values["return_previews"] == "true")
-        #expect(values["requiredtags[0]"] == "Video")
-        #expect(values["requiredtags[1]"] == "Web")
-        #expect(values["excludedtags[0]"] == "Mature")
+        #expect(values["match_all_tags"] == "true")
+        #expect(values["requiredtags[0]"] == nil)
+        // "Video or web" and "Everyone only" are expressed as exclusions.
+        #expect(Set(items.filter { $0.name.hasPrefix("excludedtags") }.map(\.value)) == ["Scene", "Application", "Questionable", "Mature"])
+        #expect(values["days"] == nil, "text search has no period")
 
         query.text = ""
-        query.type = .web
-        query.includeMature = true
-        let names = URLComponents(url: query.url(apiKey: "KEY", cursor: "*"), resolvingAgainstBaseURL: false)!.queryItems!.map(\.name)
-        #expect(!names.contains("search_text"))
-        #expect(!names.contains("requiredtags[1]"))
-        #expect(!names.contains("excludedtags[0]"))
+        query.filters.type = .web
+        query.filters.ratings = Set(WorkshopRating.allCases)
+        query.filters.category = "Anime"
+        query.filters.resolution = "3840 x 2160"
+        query.filters.features = ["Customizable", "Audio responsive"]
+        let second = try #require(URLComponents(url: query.url(apiKey: "KEY", cursor: "*"), resolvingAgainstBaseURL: false)?.queryItems)
+        #expect(!second.contains { $0.name == "search_text" })
+        #expect(second.filter { $0.name.hasPrefix("requiredtags") }.map(\.value) == ["Web", "Anime", "3840 x 2160", "Audio responsive", "Customizable"])
+        #expect(!second.contains { $0.name.hasPrefix("excludedtags") })
+        #expect(second.first { $0.name == "days" }?.value == "7")
+        #expect(query.filters.activeCount == 6)
+
+        query.period = .allTime
+        #expect(!URLComponents(url: query.url(apiKey: "KEY", cursor: "*"), resolvingAgainstBaseURL: false)!.queryItems!.contains { $0.name == "days" })
     }
 
     @Test func decodesAdditionalYouTubePreviewFromSteam() throws {

@@ -78,11 +78,16 @@ final class DesktopVideoEncoder {
             ] {
                 if let value = extensions[sourceKey] { color[targetKey] = value }
             }
-            if !color.isEmpty { settings[AVVideoColorPropertiesKey] = color }
+            // AVFoundation throws an Objective-C exception (crashing the app) unless all three color keys are present.
+            if color.count == 3 { settings[AVVideoColorPropertiesKey] = color }
+        }
+        // Check before creating the input: invalid settings make its initializer throw an uncatchable exception.
+        guard writer.canApply(outputSettings: settings, forMediaType: .video) else {
+            throw DesktopVideoError.failed("Hardware HEVC writer configuration unavailable")
         }
         let input = AVAssetWriterInput(mediaType: .video, outputSettings: settings)
         input.expectsMediaDataInRealTime = false
-        guard writer.canApply(outputSettings: settings, forMediaType: .video), writer.canAdd(input) else {
+        guard writer.canAdd(input) else {
             throw DesktopVideoError.failed("Hardware HEVC writer configuration unavailable")
         }
         writer.add(input)

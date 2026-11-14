@@ -46,20 +46,22 @@ struct LibraryView: View {
                 .frame(minWidth: 300, maxWidth: .infinity, maxHeight: .infinity)
 
                 if showsPreview {
-                    if let wallpaper = previewID.flatMap({ library.wallpaper(id: $0) }) {
-                        WallpaperInspector(wallpaper: wallpaper, onClose: { showsPreview = false },
-                            onRemove: wallpaper.isBuiltIn ? nil : { pendingRemoval = wallpaper })
-                            .frame(minWidth: 280, idealWidth: 320, maxWidth: 380)
-                    } else {
-                        VStack(spacing: 0) {
-                            InspectorHeader(title: "Preview", onClose: { showsPreview = false })
-                            ContentUnavailableView("Select a wallpaper", systemImage: "play.rectangle",
-                                description: Text("Choose a card to play its preview here."))
-                                .frame(maxHeight: .infinity)
+                    // One stable split-view pane, so selecting a card does not rebuild the gallery and lose its scroll.
+                    ZStack {
+                        if let wallpaper = previewID.flatMap({ library.wallpaper(id: $0) }) {
+                            WallpaperInspector(wallpaper: wallpaper, onClose: { showsPreview = false },
+                                onRemove: wallpaper.isBuiltIn ? nil : { pendingRemoval = wallpaper })
+                        } else {
+                            VStack(spacing: 0) {
+                                InspectorHeader(title: "Preview", onClose: { showsPreview = false })
+                                ContentUnavailableView("Select a wallpaper", systemImage: "play.rectangle",
+                                    description: Text("Choose a card to play its preview here."))
+                                    .frame(maxHeight: .infinity)
+                            }
+                            .background(.background.secondary)
                         }
-                        .background(.background.secondary)
-                        .frame(minWidth: 280, idealWidth: 320, maxWidth: 380)
                     }
+                    .frame(minWidth: 280, idealWidth: 320, maxWidth: 380)
                 }
             }
         }
