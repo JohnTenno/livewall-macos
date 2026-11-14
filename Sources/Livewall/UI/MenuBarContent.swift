@@ -1,22 +1,11 @@
 import SwiftUI
 
-/// Menu shown from the menu bar icon: quick wallpaper switch, pause and access to the library.
+/// Menu shown from the menu bar icon: pause, options and updates.
 struct MenuBarContent: View {
     @EnvironmentObject private var settings: AppSettings
-    @EnvironmentObject private var library: WallpaperLibrary
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Picker("Wallpaper", selection: $settings.selectedWallpaperID) {
-            Text("System wallpaper").tag(UUID?.none)
-            ForEach(library.wallpapers) { wallpaper in
-                Label(wallpaper.name, systemImage: wallpaper.kind.systemImage).tag(Optional(wallpaper.id))
-            }
-        }
-        .pickerStyle(.inline)
-
-        Divider()
-
         Toggle("Pause", isOn: $settings.isPaused)
             .keyboardShortcut("p")
 

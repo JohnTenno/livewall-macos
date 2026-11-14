@@ -12,11 +12,9 @@ struct UpdateMenuItem: View {
             Text("Checking for updates…")
         case .installing:
             Text("Installing update…")
-        case .upToDate:
-            Button("Livewall is up to date") { Task { await updater.check() } }
         case .failed(let message):
             Button("Update failed: \(message)") { Task { await updater.check() } }
-        case .idle:
+        case .idle, .upToDate:
             Button("Check for updates") { Task { await updater.check() } }
         }
     }

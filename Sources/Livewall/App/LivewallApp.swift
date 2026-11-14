@@ -8,7 +8,6 @@ struct LivewallApp: App {
         MenuBarExtra("Livewall", systemImage: "sparkles.tv") {
             MenuBarContent()
                 .environmentObject(appDelegate.settings)
-                .environmentObject(appDelegate.library)
                 .environmentObject(appDelegate.updater)
         }
 
